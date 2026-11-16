@@ -2,21 +2,20 @@
 
 import { useQuery } from '@tanstack/react-query';
 import { SERVICE_TYPES } from '@travelta/contracts';
-import { Heart, LifeBuoy, LogIn, ShoppingCart, Ticket, UserPlus } from 'lucide-react';
+import { LifeBuoy, ShoppingCart } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import type { ReactNode } from 'react';
 import { MockApiGate, useApi } from '@/components/api-provider';
 import { Logo, SERVICE_ICONS } from '@/components/brand/brand';
 import { TravelPhoto } from '@/components/brand/product-thumb';
+import { ProfileMenu } from '@/features/account/profile-menu';
 import { SERVICE_IMAGES } from '@travelta/shared';
 import { LocaleSwitcher } from '@/components/theme/locale-switcher';
 import { ThemeToggle } from '@/components/theme/theme';
-import { buttonVariants } from '@/components/ui/button';
 import { useDemoToday } from '@/features/demo/hooks';
 import { defaultCriteria, SearchForm, type SearchCriteria } from '@/features/search/search-form';
 import { useSelectedCategory } from '@/features/search/categories/showcase';
 import { Link, useRouter } from '@/i18n/navigation';
-import { cn } from '@/lib/cn';
 import { useSession, useSessionHydrated } from '@/lib/session';
 
 /** Signed-in storefront customer (the B2C audience) or null. */
@@ -40,26 +39,14 @@ function StoreCart() {
   );
 }
 
-/** Header actions for the public storefront: account & cart for customers, sign-in / register otherwise. */
+/** Header actions for the public storefront: cart for customers, and the profile menu (sign-in options or account). */
 export function StoreHeaderActions() {
-  const t = useTranslations('store');
-  const th = useTranslations('home');
-  const tn = useTranslations('nav');
   const { hydrated, customer } = useCustomer();
   if (!hydrated) return <span className="w-24" />;
-  if (customer) {
-    return (
-      <>
-        <MockApiGate fallback={null}><StoreCart /></MockApiGate>
-        <Link href="/account/favorites" className={cn(buttonVariants({ variant: 'ghost', size: 'sm' }), 'hidden md:inline-flex')} data-testid="my-favorites"><Heart aria-hidden />{tn('favorites')}</Link>
-        <Link href="/account/bookings" className={buttonVariants({ variant: 'ghost', size: 'sm' })} data-testid="my-trips"><Ticket aria-hidden />{t('myTrips')}</Link>
-      </>
-    );
-  }
   return (
     <>
-      <Link href="/account/login" className={buttonVariants({ variant: 'ghost', size: 'sm' })} data-testid="store-sign-in"><LogIn aria-hidden />{th('signIn')}</Link>
-      <Link href="/account/register" className={cn(buttonVariants({ variant: 'outline', size: 'sm' }), 'hidden sm:inline-flex')}><UserPlus aria-hidden />{t('register')}</Link>
+      {customer && <MockApiGate fallback={null}><StoreCart /></MockApiGate>}
+      <MockApiGate fallback={<span className="size-10" />}><ProfileMenu /></MockApiGate>
     </>
   );
 }

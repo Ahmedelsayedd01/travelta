@@ -17,7 +17,7 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { rememberSession, setRememberSession } from '@/lib/session';
 import { Link, useRouter } from '@/i18n/navigation';
 import { useErrorMessage } from '@/lib/errors';
-import { PORTAL_ROOT, safeNext } from '@/lib/nav';
+import { homeAfterSignIn, safeNext } from '@/lib/nav';
 import { useDemoAccounts, useDemoLoginAs, useLogin } from './hooks';
 
 const demoTools = process.env.NEXT_PUBLIC_DEMO_TOOLS !== 'false';
@@ -28,7 +28,7 @@ export function useAfterLogin() {
   const t = useTranslations('auth');
   return (session: SessionDto) => {
     toast.success(t('welcomeBack', { name: session.user.name.split(' ')[0] ?? session.user.name }));
-    router.replace(safeNext(params.get('next'), session.portal) ?? PORTAL_ROOT[session.portal]);
+    router.replace(safeNext(params.get('next'), session.portal) ?? homeAfterSignIn(session.portal));
   };
 }
 

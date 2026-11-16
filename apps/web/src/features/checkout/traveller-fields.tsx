@@ -13,6 +13,8 @@ import { Field } from '@/components/ui/field';
 import { Input, Select } from '@/components/ui/input';
 import { toStoredFile } from '@/lib/files';
 import { cn } from '@/lib/cn';
+import { useSession } from '@/lib/session';
+import { SelectField } from '@/components/ui/select';
 
 const TITLES: Traveller['title'][] = ['mr', 'mrs', 'ms', 'miss', 'mstr'];
 
@@ -53,6 +55,10 @@ export function TravellerFields({ index, item, travellers, details, errors, onCh
   const set = (j: number, patch: Partial<Traveller>) => onChange(travellers.map((x, k) => (k === j ? { ...x, ...patch } : patch.lead ? { ...x, lead: false } : x)));
   const sameShape = copyFrom && copyFrom.length === travellers.length && copyFrom.every((c, k) => c.type === travellers[k]!.type);
   const listError = err('travellers');
+  // Signed-in storefront customers can fill a traveller from their saved travellers (Account → My travellers).
+  const customer = useSession((s) => s.session?.user.userType === 'customer');
+  const saved = useQuery({ queryKey: ['account', 'travelers'], enabled: customer, queryFn: () => api.call('travelers.list', undefined) });
+  const savedFor = (type: Traveller['type']) => (saved.data ?? []).filter((x) => x.type === type);
 
   return (
     <div className="flex flex-col gap-4" data-testid="traveller-fields" data-item={item.id}>
@@ -67,6 +73,16 @@ export function TravellerFields({ index, item, travellers, details, errors, onCh
             {tr.lead ? <Badge tone="primary"><Star className="size-3" aria-hidden />{t('leadTraveller')}</Badge>
               : tr.type === 'adult' && <button type="button" className="text-xs font-medium text-primary hover:underline" onClick={() => set(j, { lead: true })}>{t('leadTraveller')}</button>}
           </legend>
+          {savedFor(tr.type).length > 0 && (
+            <div className="mb-3 max-w-xs">
+              <SelectField name={`t${j}saved`} aria-label={t('useSaved')} placeholder={t('useSaved')} value=""
+                options={savedFor(tr.type).map((x) => ({ value: x.id, label: `${x.firstName} ${x.lastName}` }))}
+                onValueChange={(id) => {
+                  const x = saved.data?.find((y) => y.id === id);
+                  if (x) set(j, { title: x.title, firstName: x.firstName, lastName: x.lastName, dateOfBirth: x.dateOfBirth, nationalityIso2: x.nationalityIso2, passportNo: x.passportNo, passportExpiry: x.passportExpiry });
+                }} />
+            </div>
+          )}
           <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
             <Field label={t('titleField')}>
               <Select value={tr.title} onChange={(e) => set(j, { title: e.target.value as Traveller['title'] })} name={`t${j}title`}>

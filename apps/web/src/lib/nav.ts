@@ -37,6 +37,9 @@ export interface NavGroup {
   items: NavItem[];
 }
 
+/** Where a session lands after sign-in when no `next` is given: customers go back to the storefront (their home). */
+export const homeAfterSignIn = (portal: Portal): string => (portal === 'account' ? '/' : PORTAL_ROOT[portal]);
+
 export const NAV: Record<Portal, NavGroup[]> = {
   admin: [
     { label: 'groupMain', items: [{ key: 'dashboard', label: 'dashboard', path: '', icon: LayoutDashboard, permission: 'platform.dashboard' }] },
@@ -144,18 +147,20 @@ export const NAV: Record<Portal, NavGroup[]> = {
       ],
     },
   ],
+  // Customers: account sections in the storefront layout (features/account) — no dashboard. These entries route and guard.
   account: [
-    { label: 'groupMain', items: [{ key: 'dashboard', label: 'dashboard', path: '', icon: LayoutDashboard }] },
     {
-      label: 'groupSales',
+      label: 'groupAccount',
       items: [
-        { key: 'myBookings', label: 'myBookings', path: 'bookings', icon: Ticket },
-        { key: 'favorites', label: 'favorites', path: 'favorites', icon: Heart },
         { key: 'profile', label: 'profile', path: 'profile', icon: User },
+        { key: 'myBookings', label: 'myBookings', path: 'bookings', icon: Ticket },
+        { key: 'travelers', label: 'travelers', path: 'travelers', icon: Users },
+        { key: 'favorites', label: 'favorites', path: 'favorites', icon: Heart },
+        { key: 'notifications', label: 'notifications', path: 'notifications', icon: BellRing },
         { key: 'support', label: 'support', path: 'support', icon: LifeBuoy },
+        { key: 'accountSettings', label: 'settings', path: 'settings', icon: Settings },
         { key: 'cart', label: 'cart', path: 'cart', icon: ShoppingCart, hidden: true },
         { key: 'checkout', label: 'checkout', path: 'checkout', icon: ShoppingCart, hidden: true },
-        { key: 'notifications', label: 'notifications', path: 'notifications', icon: BellRing, hidden: true },
       ],
     },
   ],

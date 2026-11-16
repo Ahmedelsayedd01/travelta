@@ -29,7 +29,7 @@ import { InvoicesScreen } from '@/features/finance/invoices-page';
 import { PaymentsPage } from '@/features/finance/payments-page';
 import { CrmScreen } from '@/features/crm/crm-page';
 import { ReportsPage } from '@/features/reports/reports-page';
-import { ProfilePage, SupportPage } from '@/features/storefront/account-pages';
+import { AccountBookingsPage, AccountProfilePage, AccountSettingsPage, AccountSupportPage, AccountTravelersPage } from '@/features/account/account-pages';
 import { StorefrontSettingsPage } from '@/features/storefront/settings-page';
 import { NotificationsPage, OutboxPage } from '@/features/notifications/notifications-page';
 import { CustomersScreen } from '@/features/customers/customers-page';
@@ -95,9 +95,11 @@ const SCREENS: Partial<Record<string, ComponentType<{ segments: string[] }>>> = 
   notifications: () => <NotificationsPage />,
   outbox: () => <OutboxPage />,
   reports: () => <ReportsPage />,
-  myBookings: BookingsScreen,
-  profile: () => <ProfilePage />,
-  support: () => <SupportPage />,
+  myBookings: ({ segments }) => (segments.length === 0 ? <AccountBookingsPage /> : <BookingsScreen segments={segments} />),
+  profile: () => <AccountProfilePage />,
+  support: () => <AccountSupportPage />,
+  travelers: () => <AccountTravelersPage />,
+  accountSettings: () => <AccountSettingsPage />,
   storefront: () => <StorefrontSettingsPage />,
 };
 

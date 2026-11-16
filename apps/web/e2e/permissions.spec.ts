@@ -40,7 +40,7 @@ test('a supplier only sees its own products and has no agency or admin areas', a
 test('a customer only reaches their own account', async ({ page }) => {
   await signIn(page, ACCOUNTS.customer, 'customer');
   await page.goto('/en/account/bookings');
-  await expect(page.getByTestId('bookings-table')).toBeVisible();
+  await expect(page.getByTestId('trip-tabs')).toBeVisible();
   await page.goto('/en/agency');
   await expect(page).not.toHaveURL(/\/agency$/);
   await page.goto('/en/admin');

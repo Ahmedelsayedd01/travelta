@@ -47,9 +47,19 @@ export async function signIn(page: Page, email: string, audience: 'staff' | 'cus
 /** Sign out through the real button when it's on screen (revokes the server session); otherwise drop the stored session. */
 export async function signOut(page: Page) {
   const button = page.getByRole('button', { name: 'Sign out' }).first();
+  const profile = page.getByTestId('profile-menu-trigger');
   if (await button.isVisible().catch(() => false)) {
     await button.click();
     await expect(page.getByRole('button', { name: 'Sign out' })).toHaveCount(0);
+  } else if (await page.evaluate(() => { try { return !!localStorage.getItem('travelta:session'); } catch { return false; } }) && await profile.isVisible().catch(() => false)) {
+    // Storefront customers sign out from the profile menu.
+    await profile.click();
+    const out = page.getByTestId('menu-sign-out');
+    if (await out.isVisible().catch(() => false)) {
+      await out.click();
+      await expect(page.getByTestId('menu-sign-out')).toHaveCount(0);
+      await expect(page.getByTestId('profile-menu-trigger')).toContainText(/Sign in|تسجيل الدخول/);
+    } else await page.keyboard.press('Escape');
   }
   await page.evaluate(() => { try { localStorage.removeItem('travelta:session'); } catch { /* storage blocked */ } });
 }

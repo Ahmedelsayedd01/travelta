@@ -17,7 +17,8 @@ test('customer registers, verifies the email, resets the password and signs in a
   await page.locator('input[name=confirmPassword]').fill('Travel#2026');
   await page.getByTestId('accept-terms').check();
   await page.getByRole('button', { name: 'Create account' }).click();
-  await expect(page).toHaveURL(/\/account/);
+  await expect(page).toHaveURL(/\/en\/?$/); // customers land on the storefront home
+  await page.goto('/en/account/profile');
 
   await page.getByTestId('verify-email-start').click();
   const code = (await page.getByTestId('demo-code').locator('strong').innerText()).trim();
@@ -56,7 +57,7 @@ test('customer registers, verifies the email, resets the password and signs in a
   await page.locator('input[type=email]').fill(email);
   await page.locator('input[name=password]').fill('NewTravel#2027');
   await page.getByRole('button', { name: /sign in/i }).first().click();
-  await expect(page).toHaveURL(/\/account(?!\/login)/);
+  await expect(page).toHaveURL(/\/en\/?$/);
 });
 
 test('password reset does not reveal unknown accounts', async ({ page }) => {
@@ -79,7 +80,7 @@ test('show/hide password and "keep me signed in" (tab-only session when unchecke
   await page.locator('input[type=email]').fill('customer@example.com');
   await page.getByRole('checkbox', { name: 'Keep me signed in' }).click();
   await page.getByRole('button', { name: /sign in/i }).first().click();
-  await expect(page).toHaveURL(/\/account(?!\/login)/);
+  await expect(page).toHaveURL(/\/en\/?$/);
   const where = await page.evaluate(() => ({ local: localStorage.getItem('travelta:session'), tab: sessionStorage.getItem('travelta:session') }));
   expect(where.local).toBeNull();
   expect(where.tab).toContain('customer@example.com');

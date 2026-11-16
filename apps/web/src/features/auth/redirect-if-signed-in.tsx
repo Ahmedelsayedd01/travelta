@@ -3,7 +3,7 @@
 import { useSearchParams } from 'next/navigation';
 import { useEffect, useState, type ReactNode } from 'react';
 import { useRouter } from '@/i18n/navigation';
-import { PORTAL_ROOT, safeNext } from '@/lib/nav';
+import { homeAfterSignIn, safeNext } from '@/lib/nav';
 import { useSession, useSessionHydrated } from '@/lib/session';
 
 /**
@@ -24,7 +24,7 @@ export function RedirectIfSignedIn({ audience, children }: { audience: 'staff' |
   }
 
   useEffect(() => {
-    if (arrival && arrival !== 'anonymous') router.replace(safeNext(params.get('next'), arrival.portal) ?? PORTAL_ROOT[arrival.portal]);
+    if (arrival && arrival !== 'anonymous') router.replace(safeNext(params.get('next'), arrival.portal) ?? homeAfterSignIn(arrival.portal));
   }, [arrival, params, router]);
 
   return arrival === 'anonymous' ? <>{children}</> : null;

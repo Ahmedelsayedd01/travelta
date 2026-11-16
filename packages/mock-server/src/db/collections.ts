@@ -1,5 +1,5 @@
 import {
-  placeEntitySchema, type PlaceEntity, favoriteEntitySchema, type FavoriteEntity, authCodeEntitySchema, type AuthCodeEntity,
+  placeEntitySchema, type PlaceEntity, savedTravelerEntitySchema, type SavedTravelerEntity, supportTicketEntitySchema, type SupportTicketEntity, favoriteEntitySchema, type FavoriteEntity, authCodeEntitySchema, type AuthCodeEntity,
   auditLogEntitySchema, countryEntitySchema, currencyEntitySchema, destinationEntitySchema, fxRateEntitySchema, membershipEntitySchema,
   nationalityGroupEntitySchema, organizationEntitySchema, roleEntitySchema, sessionEntitySchema, userEntitySchema,
   type AuditLogEntity, type CountryEntity, type CurrencyEntity, type DestinationEntity, type FxRateEntity, type MembershipEntity,
@@ -33,6 +33,8 @@ export interface Collections {
   destinations: DestinationEntity;
   places: PlaceEntity;
   favorites: FavoriteEntity;
+  savedTravelers: SavedTravelerEntity;
+  supportTickets: SupportTicketEntity;
   fxRates: FxRateEntity;
   organizations: OrganizationEntity;
   users: UserEntity;
@@ -98,6 +100,8 @@ export const collectionSchemas: { [K in CollectionName]: z.ZodType<Collections[K
   destinations: destinationEntitySchema,
   places: placeEntitySchema,
   favorites: favoriteEntitySchema,
+  savedTravelers: savedTravelerEntitySchema,
+  supportTickets: supportTicketEntitySchema,
   fxRates: fxRateEntitySchema,
   organizations: organizationEntitySchema,
   users: userEntitySchema,
@@ -157,4 +161,4 @@ export const collectionSchemas: { [K in CollectionName]: z.ZodType<Collections[K
 export const COLLECTION_NAMES = Object.keys(collectionSchemas) as CollectionName[];
 
 /** Bump when a stored entity shape changes incompatibly; older snapshots are reseeded (with notice). */
-export const SCHEMA_VERSION = 17;
+export const SCHEMA_VERSION = 18;

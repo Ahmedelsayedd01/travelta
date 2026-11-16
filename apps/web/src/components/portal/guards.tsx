@@ -8,8 +8,9 @@ import { buttonVariants } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useMe } from '@/features/auth/hooks';
 import { Link, usePathname, useRouter } from '@/i18n/navigation';
-import { PORTAL_ROOT } from '@/lib/nav';
+import { homeAfterSignIn, PORTAL_ROOT } from '@/lib/nav';
 import { useCan, useSession, useSessionHydrated } from '@/lib/session';
+import { AccountShell } from '@/features/account/account-shell';
 import { PortalShell } from './portal-shell';
 
 const audienceOf = (portal: Portal) => (portal === 'account' ? 'customer' : 'staff');
@@ -35,7 +36,7 @@ export function PortalGuard({ portal, children }: { portal: Portal; children: Re
     if (!session || session.user.userType !== audienceOf(portal)) {
       router.replace(`${loginPathOf(portal)}?next=${encodeURIComponent(pathname)}`);
     } else if (session.portal !== portal) {
-      router.replace(PORTAL_ROOT[session.portal]);
+      router.replace(homeAfterSignIn(session.portal));
     }
   }, [hydrated, session, portal, pathname, router]);
 
@@ -48,7 +49,8 @@ export function PortalGuard({ portal, children }: { portal: Portal; children: Re
       </div>
     );
   }
-  return <PortalShell portal={portal}>{children}</PortalShell>;
+  // Customers use the storefront layout with account navigation; business portals keep their dashboard shell.
+  return portal === 'account' ? <AccountShell>{children}</AccountShell> : <PortalShell portal={portal}>{children}</PortalShell>;
 }
 
 export function Forbidden() {

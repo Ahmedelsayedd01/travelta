@@ -8,7 +8,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { useDemoAccounts, useDemoLoginAs } from '@/features/auth/hooks';
 import { useRouter } from '@/i18n/navigation';
 import { useErrorMessage } from '@/lib/errors';
-import { PORTAL_ROOT } from '@/lib/nav';
+import { homeAfterSignIn } from '@/lib/nav';
 import { useSession } from '@/lib/session';
 import { cn } from '@/lib/cn';
 
@@ -38,7 +38,7 @@ export function RoleSwitcher({ onSwitched }: { onSwitched: () => void }) {
         onSuccess: (session) => {
           toast.success(t('demo.signedInAs', { name: session.user.name }));
           onSwitched();
-          router.push(PORTAL_ROOT[session.portal]);
+          router.push(homeAfterSignIn(session.portal));
         },
         onError: (e) => toast.error(errorMessage(e)),
       },

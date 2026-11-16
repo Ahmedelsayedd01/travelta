@@ -64,6 +64,8 @@ function buildSeedUncached(seed: number, now: number, history: boolean): DemoSna
     destinations,
     places,
     favorites: [],
+    savedTravelers: [],
+    supportTickets: [],
     fxRates,
     organizations: identity.organizations,
     users: identity.users,

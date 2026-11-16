@@ -1,6 +1,7 @@
 import { createId } from '@travelta/shared';
 import { ApiException, forbidden } from '../errors';
 import { requireCustomer } from '../security';
+import { simHash, verifyPassword } from '../services/passwords';
 import { audit } from '../services/audit';
 import { getBookingScoped } from '../services/booking';
 import { customerForUser } from '../services/customers';
@@ -11,7 +12,10 @@ import { paymentReceived } from '../services/notifications/events';
 import { authorizeCard, gatewayFor } from '../services/payments';
 import type { HandlerMap } from './types';
 
-type Ops = 'account.updateProfile' | 'account.payByCard' | 'account.support' | 'favorites.list' | 'favorites.toggle';
+type Ops = 'account.updateProfile' | 'account.payByCard' | 'account.support' | 'favorites.list' | 'favorites.toggle'
+  | 'travelers.list' | 'travelers.save' | 'travelers.delete' | 'account.changePassword' | 'account.tickets' | 'account.profile';
+
+const MAX_TRAVELERS = 20;
 
 const MAX_FAVORITES = 200;
 
@@ -33,6 +37,69 @@ export const accountHandlers: HandlerMap<Ops> = {
     return { favorited: true };
   },
 
+
+  /** The signed-in customer's own profile (user + customer record at the seller). */
+  'account.profile': (ctx) => {
+    const p = requireCustomer(ctx);
+    const c = customerForUser(ctx, p);
+    return { name: p.user.name, email: p.user.email, phone: p.user.phone ?? '', locale: p.user.locale, nationalityIso2: c.nationalityIso2 ?? null, emailVerified: p.user.emailVerifiedAt !== null };
+  },
+
+  // ---- Saved travellers (own only) -----------------------------------------------------------------------
+  'travelers.list': (ctx) => {
+    const { user } = requireCustomer(ctx);
+    return ctx.db.filter('savedTravelers', (x) => x.userId === user.id).sort((a, b) => a.firstName.localeCompare(b.firstName));
+  },
+
+  'travelers.save': (ctx, { id, ...input }) => {
+    const { user } = requireCustomer(ctx);
+    const today = ctx.clock.today();
+    const issues: { field: string; issue: string }[] = [];
+    if (input.dateOfBirth && input.dateOfBirth > today) issues.push({ field: 'dateOfBirth', issue: 'validation.date_future' });
+    if (input.type !== 'adult' && !input.dateOfBirth) issues.push({ field: 'dateOfBirth', issue: 'validation.required' });
+    if (input.passportExpiry && input.passportExpiry <= today) issues.push({ field: 'passportExpiry', issue: 'validation.passport_expired' });
+    if (input.passportNo && !input.passportExpiry) issues.push({ field: 'passportExpiry', issue: 'validation.required' });
+    if (input.nationalityIso2 && !ctx.db.find('countries', (c) => c.iso2 === input.nationalityIso2)) issues.push({ field: 'nationalityIso2', issue: 'validation.invalid_value' });
+    if (issues.length) throw new ApiException('VALIDATION_ERROR', 'Check the traveller details', issues);
+    const now = ctx.clock.nowIso();
+    if (id) {
+      const existing = ctx.db.get('savedTravelers', id);
+      if (!existing || existing.userId !== user.id) throw new ApiException('NOT_FOUND', 'Traveller not found');
+      return ctx.db.replace('savedTravelers', { ...existing, ...input, version: existing.version + 1, updatedAt: now });
+    }
+    if (ctx.db.filter('savedTravelers', (x) => x.userId === user.id).length >= MAX_TRAVELERS) throw new ApiException('CONFLICT', `You can save up to ${MAX_TRAVELERS} travellers`);
+    return ctx.db.insert('savedTravelers', { id: createId('trv', ctx.clock.now()), createdAt: now, updatedAt: now, version: 1, userId: user.id, ...input });
+  },
+
+  'travelers.delete': (ctx, { id }) => {
+    const { user } = requireCustomer(ctx);
+    const existing = ctx.db.get('savedTravelers', id);
+    if (!existing || existing.userId !== user.id) throw new ApiException('NOT_FOUND', 'Traveller not found');
+    ctx.db.delete('savedTravelers', id);
+    return { deleted: true as const };
+  },
+
+  'account.changePassword': (ctx, { currentPassword, newPassword }) => {
+    const p = requireCustomer(ctx);
+    if (!verifyPassword(currentPassword, p.user.passwordHash)) {
+      throw new ApiException('VALIDATION_ERROR', 'The current password is incorrect', [{ field: 'currentPassword', issue: 'validation.password_incorrect' }]);
+    }
+    const now = ctx.clock.nowIso();
+    const salt = createId('slt', ctx.clock.now()).slice(4, 14);
+    ctx.db.replace('users', { ...p.user, passwordHash: simHash(newPassword, salt), version: p.user.version + 1, updatedAt: now });
+    // Sign out every other device; keep this session.
+    for (const s of ctx.db.filter('sessions', (x) => x.userId === p.user.id && x.revokedAt === null && x.id !== p.session.id)) {
+      ctx.db.replace('sessions', { ...s, revokedAt: now, version: s.version + 1, updatedAt: now });
+    }
+    audit(ctx, { tenantId: p.org.id, action: 'account.password_changed', entity: 'user', entityId: p.user.id });
+    return { ok: true as const };
+  },
+
+  'account.tickets': (ctx) => {
+    const { user } = requireCustomer(ctx);
+    return ctx.db.filter('supportTickets', (x) => x.userId === user.id).sort((a, b) => b.at.localeCompare(a.at))
+      .map((x) => ({ ...x, bookingRef: x.bookingId ? ctx.db.get('bookings', x.bookingId)?.ref ?? null : null }));
+  },
 
   /** Storefront profile: the user account and the customer record at the seller stay in sync. */
   'account.updateProfile': (ctx, input) => {
@@ -93,6 +160,8 @@ export const accountHandlers: HandlerMap<Ops> = {
     notifyOrg(ctx, c.tenantId, { topic: 'support.request', permission: 'bookings.view', vars, link: bookingId ? `/agency/bookings/${bookingId}` : null });
     message(ctx, { tenantId: c.tenantId, topic: 'support.request', to: { name: c.name, email: c.email || p.user.email }, locale: p.user.locale, vars, related: bookingId ? { kind: 'booking', id: bookingId } : null });
     audit(ctx, { tenantId: c.tenantId, action: 'account.support_request', entity: 'customer', entityId: c.id, after: { ticket, topic } });
+    const now = ctx.clock.nowIso();
+    ctx.db.insert('supportTickets', { id: createId('tkt', ctx.clock.now()), createdAt: now, updatedAt: now, version: 1, tenantId: c.tenantId, userId: p.user.id, ref: ticket, topic, bookingId: bookingId ?? null, message: text, status: 'open', at: now });
 
     return { ticket };
   },
