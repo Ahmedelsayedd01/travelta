@@ -2,7 +2,7 @@
 
 import { useQuery } from '@tanstack/react-query';
 import type { ServiceType } from '@travelta/contracts';
-import { addDays, DESTINATION_IMAGES } from '@travelta/shared';
+import { addDays, DESTINATION_IMAGES, SERVICE_IMAGES } from '@travelta/shared';
 import { ArrowRight, Star } from 'lucide-react';
 import { useLocale, useTranslations } from 'next-intl';
 import { MockApiGate, useApi } from '@/components/api-provider';
@@ -27,7 +27,7 @@ function Destinations() {
   const api = useApi();
   const q = useQuery({ queryKey: ['reference', 'destinations', 'all'], queryFn: () => api.call('reference.destinations', { page: 1, pageSize: 100 }) });
   if (!q.data) return <Skeleton className="mt-8 h-64 w-full rounded-xl" />;
-  const popular = q.data.items.filter((d) => d.popular && DESTINATION_IMAGES[d.code]).slice(0, 6);
+  const popular = q.data.items.filter((d) => d.popular && DESTINATION_IMAGES[d.code]).slice(0, 5);
   return (
     <ul className="mt-8 grid grid-cols-2 gap-4 md:grid-cols-3" data-testid="featured-destinations">
       {popular.map((d, i) => (
@@ -76,10 +76,10 @@ function Row({ serviceType, destinationCode, title }: { serviceType: ServiceType
       </div>
       {!q.data ? <Skeleton className="mt-4 h-56 w-full rounded-xl" /> : (
         <ul className="mt-4 grid gap-4 sm:grid-cols-2 lg:grid-cols-4" data-testid={`popular-${serviceType}`}>
-          {q.data.items.map((r) => (
+          {q.data.items.map((r, i) => (
             <li key={r.key}>
               <Link href={searchHref(serviceType, destinationCode, from)} className="group flex h-full flex-col overflow-hidden rounded-xl border border-border bg-surface shadow-xs transition hover:shadow-md">
-                <ProductThumb serviceType={r.serviceType} seed={r.imageSeed} className="aspect-[4/3] w-full rounded-none" sizes="(min-width: 1024px) 280px, (min-width: 640px) 50vw, 100vw" />
+                <ProductThumb serviceType={r.serviceType} seed={r.imageSeed} image={SERVICE_IMAGES[r.serviceType][i % SERVICE_IMAGES[r.serviceType].length]} className="aspect-[4/3] w-full rounded-none" sizes="(min-width: 1024px) 280px, (min-width: 640px) 50vw, 100vw" />
                 <span className="flex flex-1 flex-col gap-1 p-4">
                   <span className="line-clamp-2 font-semibold text-fg">{r.name[locale]}</span>
                   <span className="inline-flex items-center gap-1 text-xs text-fg-muted"><Star className="size-3.5 fill-highlight text-highlight" aria-hidden />{r.rating.toFixed(1)} · {ts('reviews', { count: r.reviews })}</span>

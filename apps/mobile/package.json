@@ -14,7 +14,8 @@
     "lint": "eslint .",
     "doctor": "expo-doctor",
     "web": "expo start --web",
-    "export:web": "expo export --platform web --output-dir dist/web"
+    "export:web": "expo export --platform web --output-dir dist/web",
+    "e2e:web": "playwright test"
   },
   "dependencies": {
     "@hookform/resolvers": "7.0.6",
@@ -44,6 +45,7 @@
     "intl-messageformat": "12.1.5",
     "leaflet": "1.9.4",
     "react": "19.3.0",
+    "react-dom": "19.3.0",
     "react-hook-form": "7.92.0",
     "react-i18next": "18.0.1",
     "react-native": "0.88.1",

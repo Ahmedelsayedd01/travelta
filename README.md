@@ -38,9 +38,12 @@ Test cards: `4242 4242 4242 4242` succeeds · `4000 0000 0000 0002` declines · 
 ## Quality gates
 - `pnpm check`: typecheck, lint (including package-boundary rules) and 336 unit/integration tests. These include dedicated financial tests (ledger balance, wallets, instalments, cancellations, the profit-KPI audit), cross-app contract tests and seed determinism.
 - `pnpm --filter @travelta/web e2e`: 33 Playwright browser tests, including axe-core WCAG 2.1 AA scans. See `apps/web/e2e/README.md`.
+- `pnpm --filter @travelta/mobile e2e:web`: 18 Playwright tests of the mobile app rendered by Expo Web (phone size).
+- `pnpm --filter @travelta/mobile web`: run the mobile app in a browser. This doesn't replace device testing.
 - `pnpm export:mobile`: iOS and Android bundles. Device testing steps are in `docs/MOBILE_TESTING.md`.
 
 ## Documents for review
 - `docs/BUSINESS_DECISIONS_FOR_APPROVAL.md`: business rules implemented without explicit approval, with options and recommendations.
 - `docs/FINANCIAL_VERIFICATION.md`: the 30-day profit figure traced line by line to the ledger.
 - `docs/PLATFORM_AUDIT.md`: feature, CRUD, permission and workflow coverage, and what remains.
+- `docs/PROJECT_COMPLETION_AUDIT.md`: milestone status after Stage 2, fixed bugs, the image mapping and platform support.

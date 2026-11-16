@@ -15,11 +15,13 @@ import { SERVICE_ICONS } from './brand';
  */
 const HUES = [172, 180, 188, 196, 204, 212, 160, 168];
 
-export function ProductThumb({ serviceType, seed, className, label, sizes = '(min-width: 1024px) 240px, 100vw', priority }: {
+export function ProductThumb({ serviceType, seed, className, label, sizes = '(min-width: 1024px) 240px, 100vw', priority, image }: {
   serviceType: ServiceType; seed: number; className?: string; label?: string; sizes?: string; priority?: boolean;
+  /** Explicit photo (e.g. a row that wants distinct photos per card); must belong to the same service. */
+  image?: TravelImageKey;
 }) {
   const Icon = SERVICE_ICONS[serviceType];
-  const key = imageForProduct(serviceType, seed);
+  const key = image ?? imageForProduct(serviceType, seed);
   const [failed, setFailed] = useState(false);
   const h1 = HUES[seed % HUES.length]!;
   const h2 = HUES[(seed >> 3) % HUES.length]!;

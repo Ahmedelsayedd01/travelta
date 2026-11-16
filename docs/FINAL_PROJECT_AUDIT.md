@@ -1,5 +1,7 @@
 # Final project audit (Stage 1) — 16 Nov 2026
 
+> **Update, 17 Nov:** Stage 2 is complete. Defects B1–B3 and the gaps below were fixed. The current status is in `PROJECT_COMPLETION_AUDIT.md`; this file is kept as the Stage 1 record.
+
 **Scope of this stage:** inspection and testing only. No application code was changed. The only file written is this document. Every status below is based on code, routes and tests, and on the runs listed in §9. Documentation alone counted for nothing.
 
 **Status legend**

@@ -5,6 +5,7 @@ import { cn } from '@/lib/cn';
 
 /**
  * One-time code input: N single-digit boxes, auto-advance, backspace to the previous box, paste of the whole code.
+ * No maxLength on the boxes: browser / iOS one-time-code autofill drops the whole code into the first box.
  * Always laid out left-to-right (codes are read as numbers, also in Arabic). Value is the joined digits.
  */
 export function OtpInput({ value, onChange, length = 6, label, invalid, describedBy, autoFocus, testId = 'otp-input' }: {
@@ -32,7 +33,7 @@ export function OtpInput({ value, onChange, length = 6, label, invalid, describe
   return (
     <div role="group" aria-label={label} aria-describedby={describedBy} className="flex justify-between gap-2" dir="ltr" data-testid={testId}>
       {digits.map((d, i) => (
-        <input key={i} ref={(el) => { refs.current[i] = el; }} value={d} inputMode="numeric" autoComplete={i === 0 ? 'one-time-code' : 'off'} maxLength={1}
+        <input key={i} ref={(el) => { refs.current[i] = el; }} value={d} inputMode="numeric" autoComplete={i === 0 ? 'one-time-code' : 'off'}
           aria-label={`${label} ${i + 1}/${length}`} aria-invalid={invalid || undefined} autoFocus={autoFocus && i === 0}
           className={cn('h-12 w-full min-w-0 rounded-md border bg-surface text-center text-lg font-semibold tabular-nums text-fg focus-visible:border-primary focus-visible:outline-2 focus-visible:outline-focus sm:h-14 sm:text-xl', invalid ? 'border-danger' : 'border-border-strong')}
           onChange={(e) => { const v = e.target.value.replace(/\D/g, ''); if (v.length > 1) { onChange((value.slice(0, i) + v).slice(0, length)); refs.current[Math.min(i + v.length, length - 1)]?.focus(); return; } setAt(i, v); if (v && i < length - 1) refs.current[i + 1]?.focus(); }}

@@ -11,10 +11,43 @@
 | iOS bundle (`expo export --platform ios`) | Passed (5.1 MB Hermes bytecode) |
 | Android bundle (`expo export --platform android`) | Passed (5.1 MB Hermes bytecode) |
 | Shared business logic (mock server, contracts) | 178 server tests, run in Node |
+| Expo Web runtime (browser, phone size) | Passed (18 Playwright tests, see below) |
+| `expo-doctor` | 20 / 20 checks passed |
 | Running on an Android device or emulator | **Not done** |
 | Running on an iPhone or the iOS Simulator | **Not done** |
 
 A successful export proves the app compiles for both platforms and every imported module resolves. It does **not** prove that screens render, that gestures work, or that native modules (SecureStore, WebView, notifications, printing, sharing) behave correctly.
+
+## Running in a browser (Expo Web)
+
+```
+pnpm --filter @travelta/mobile web        # dev server, opens the browser
+pnpm --filter @travelta/mobile e2e:web    # 18 Playwright tests at phone size (exports + serves on :8090)
+```
+
+**Verified in Chrome on 17 Nov 2026 (18 / 18 tests):**
+- onboarding: Next, Previous, Skip, and persistence after reload;
+- sign in, sign out and session persistence;
+- registration with confirm password and terms, then email verification;
+- guided password reset;
+- every tab;
+- search in all seven services;
+- hotel map with price markers and preview;
+- product with photo and location map;
+- cart → card checkout → trip;
+- favourites;
+- Arabic RTL;
+- axe scans of home, explore and login.
+
+**Web-specific implementations**, each picked by a `.web` file so native code is unchanged:
+- session storage: localStorage, weaker than the native keychain;
+- maps: Leaflet in the DOM;
+- alerts: toast or browser confirm;
+- voucher: the browser print dialog;
+- demo export: a file download;
+- locale: saved in localStorage.
+
+Expo Web shows the React Native screens rendered by react-native-web. **It is not a substitute for testing on Android or iOS.**
 
 ## Testing on a physical Android phone with Expo Go
 
