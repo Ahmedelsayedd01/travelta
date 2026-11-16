@@ -70,6 +70,8 @@ export const offerOptionSchema = z.object({
   marginMinor: z.number().int().nullable(),
   currency: currencySchema,
   available: z.number().int(),
+  /** Max adults per unit (hotel room, vehicle); null when the product sells per person. */
+  capacity: z.number().int().nullable(),
 });
 export type OfferOption = z.infer<typeof offerOptionSchema>;
 

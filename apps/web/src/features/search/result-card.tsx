@@ -8,7 +8,8 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/cn';
 import { FavoriteButton } from '@/features/favorites/favorites';
-import { detailLine, priceBasis, priceOf, SOURCE_GROUP } from './format';
+import { priceBasis, priceOf, SOURCE_GROUP } from './format';
+import { CategoryFacts } from './categories/cards';
 
 /**
  * One product in the results — merged across every source that sells it, headline = the cheapest option.
@@ -48,7 +49,7 @@ export function ResultCard({ result: r, audience, onOpen, selected, onHover, onS
           <h3 className="text-base font-semibold leading-snug text-fg">{r.name[locale]}</h3>
           <FavoriteButton result={r} />
         </div>
-        <p className="line-clamp-1 text-sm text-fg-muted">{detailLine(r.details, ts as never, locale).filter(Boolean).join(' · ')}</p>
+        <CategoryFacts r={r} />
         <div className="mt-auto flex flex-wrap items-center gap-1.5 pt-1">
           <Badge tone="primary"><span className="tabular">{r.rating.toFixed(1)}</span></Badge>
           <span className="text-xs text-fg-muted">{ts('reviews', { count: r.reviews })}</span>

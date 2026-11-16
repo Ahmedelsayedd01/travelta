@@ -14,6 +14,7 @@ import { ThemeToggle } from '@/components/theme/theme';
 import { buttonVariants } from '@/components/ui/button';
 import { useDemoToday } from '@/features/demo/hooks';
 import { defaultCriteria, SearchForm, type SearchCriteria } from '@/features/search/search-form';
+import { useSelectedCategory } from '@/features/search/categories/showcase';
 import { Link, useRouter } from '@/i18n/navigation';
 import { cn } from '@/lib/cn';
 import { useSession, useSessionHydrated } from '@/lib/session';
@@ -125,10 +126,11 @@ export function HeroSearch() {
 
 function HeroSearchForm() {
   const router = useRouter();
+  const setCategory = useSelectedCategory((s) => s.set);
   const today = useDemoToday();
   return (
     <div className="rounded-xl bg-surface p-4 text-fg shadow-lg" data-testid="hero-search">
-      <SearchForm key={today} initial={defaultCriteria('hotel', today)} staff={false} onSearch={(c) => router.push(toSearch(c))} />
+      <SearchForm key={today} initial={defaultCriteria('hotel', today)} staff={false} onSearch={(c) => router.push(toSearch(c))} onServiceChange={setCategory} />
     </div>
   );
 }

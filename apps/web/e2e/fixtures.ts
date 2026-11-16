@@ -58,6 +58,8 @@ export async function signOut(page: Page) {
 export async function waitForContent(page: Page) {
   await expect(page.locator('main, [role=main]').first()).toBeVisible();
   await expect(page.locator('.animate-pulse')).toHaveCount(0, { timeout: 30_000 });
+  // Let entrance transitions finish: contrast is judged on the settled page, not mid-fade.
+  await page.evaluate(() => Promise.all(document.getAnimations().filter((a) => a.playState === 'running' && a.effect?.getTiming().iterations !== Infinity).map((a) => a.finished.catch(() => undefined))));
 }
 
 /** WCAG 2.1 A/AA scan of the loaded page. Map tiles are third-party imagery, excluded from the scan. */
@@ -76,11 +78,18 @@ export async function expectNoHorizontalOverflow(page: Page) {
   expect(overflow, 'horizontal overflow in px').toBeLessThanOrEqual(1);
 }
 
-/** Pick the first destination option whose value is the IATA-like code (selects use destination ids). */
+/** Choose an option in a design-system SelectField (Base UI) by its value, like a user: open, click the option. */
+export async function pickOption(page: Page, name: string, value: string, scope = '') {
+  const trigger = page.locator(`${scope} [data-testid="select-${name}"]`.trim());
+  await trigger.click();
+  await page.locator(`[role=option][data-value="${value}"]`).click();
+  await expect(trigger).toHaveAttribute('data-value', value);
+}
+
+/** Pick a destination by code in a search form. */
 export async function chooseDestination(page: Page, scope: string, code: string) {
-  const select = page.locator(`${scope} select[name=destination]`);
-  await expect(select.locator('option').nth(1)).toBeAttached({ timeout: 20_000 });
-  await select.selectOption(code);
+  await expect(page.locator(`${scope} [data-testid="select-destination"]`)).toBeEnabled({ timeout: 20_000 });
+  await pickOption(page, 'destination', code, scope);
 }
 
 /** Deep link to search results (criteria live in `?s=`); omitted fields use the form defaults. */

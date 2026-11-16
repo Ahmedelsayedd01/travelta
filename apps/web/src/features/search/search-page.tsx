@@ -12,6 +12,7 @@ import { usePathname, useRouter } from '@/i18n/navigation';
 import { defaultCriteria, SearchForm, toSearchInput, type SearchCriteria } from './search-form';
 import { AddToCartButton } from '@/features/cart/add-to-cart';
 import { SearchResults, type OfferActions } from './search-results';
+import { CategoryShowcase, useSelectedCategory } from './categories/showcase';
 
 /** Criteria live in the URL (`?s=`) so results survive navigation to the cart and back, and can be shared. */
 function useCriteria(): [SearchCriteria | null, (c: SearchCriteria) => void] {
@@ -34,6 +35,9 @@ export function SearchExperience({ staff, storefront, offerActions, header }: {
   const ts = useTranslations('search');
   const api = useApi();
   const [criteria, setCriteria] = useCriteria();
+  const pathname = usePathname();
+  const category = useSelectedCategory((s) => s.service);
+  const setCategory = useSelectedCategory((s) => s.set);
   const destinations = useQuery({ queryKey: ['reference', 'destinations', 'all'], queryFn: () => api.call('reference.destinations', { page: 1, pageSize: 100 }) });
   const input = criteria && destinations.data
     ? toSearchInput(criteria, destinations.data.items.find((d) => d.code === criteria.destinationCode)?.id, staff)
@@ -41,9 +45,10 @@ export function SearchExperience({ staff, storefront, offerActions, header }: {
   return (
     <div className="flex flex-col gap-6">
       {header}
-      <SearchForm key={criteria ? JSON.stringify(criteria) : 'new'} initial={criteria ?? defaultCriteria()} staff={staff} onSearch={setCriteria} />
+      <SearchForm key={criteria ? JSON.stringify(criteria) : 'new'} initial={criteria ?? defaultCriteria(category)} staff={staff} onSearch={setCriteria} onServiceChange={setCategory} />
       {input ? <SearchResults key={JSON.stringify(input)} input={input} storefront={storefront} offerActions={offerActions} />
-        : !criteria && <EmptyState icon={<Compass aria-hidden />} title={ts('startTitle')} body={ts('startBody')} />}
+        : !criteria && (staff ? <EmptyState icon={<Compass aria-hidden />} title={ts('startTitle')} body={ts('startBody')} />
+          : <CategoryShowcase base={pathname.replace(/\/search$/, '')} />)}
     </div>
   );
 }

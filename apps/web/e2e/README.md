@@ -27,6 +27,8 @@ pnpm --filter @travelta/web e2e:report      # open the HTML report (e2e-report/)
 | `hotel-map.mobile.spec.ts` | Scenario B on a phone (Pixel 7). "Show map", tap a price pill to see a preview card, then "Show list". |
 | `customer-auth.spec.ts` | Registration, email verification (OTP), forgot password (wrong code rejected), reset, and sign-in with the new password. No account enumeration. |
 | `booking-lifecycle.spec.ts` | Scenarios C, D, E, F, H. Agency booking held on the wallet → supplier confirms on its board and sees the payable → invoice → payment collected → voucher → cancellation with fee and refund → trial balance balanced. Also a customer storefront booking with a card, My bookings and self-service cancellation. |
+| `search-form.spec.ts` | Category switching: each of the 7 tabs shows its own fields, and the showcase shows that category's cards and photos. Validation: no errors before interaction; errors on submit next to their fields, cleared when fixed; visa nationality; same-airport flights; swap route. Date picker: disabled days, check-out following check-in, keyboard. Tabs and selects by keyboard. Arabic RTL. Reduced motion. |
+| `services.spec.ts` | Search → results → details for each of the 7 services, and an Arabic customer journey. |
 | `account-and-finance.spec.ts` | Customer favourites, the profit breakdown on the dashboard, and the custom-domain flow with the "DNS/SSL not connected" notice. |
 | `accessibility.spec.ts` | axe-core WCAG 2.1 A/AA on 26 screens across public pages, admin, agency, supplier and customer. |
 | `responsive.mobile.spec.ts` | Phone width + dark theme: no horizontal scrolling, plus axe on the main screens. |

@@ -11,7 +11,8 @@ import { EmptyState, ErrorState } from '@/components/feedback/states';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Field } from '@/components/ui/field';
-import { Input, Select } from '@/components/ui/input';
+import { Input } from '@/components/ui/input';
+import { FormSelect } from '@/components/form/form-controls';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useErrorMessage } from '@/lib/errors';
 import { cn } from '@/lib/cn';
@@ -81,12 +82,9 @@ export function SearchResults({ input, storefront, offerActions }: { input: Sear
         <Checkbox label={ts('refundableOnly')} checked={filters.refundableOnly ?? false} onCheckedChange={(on) => patch({ refundableOnly: on || undefined })} />
         {hotel && (
           <>
-            <Field label={ts('minStars')}>
-              <Select name="minStars" value={filters.minStars ?? ''} onChange={(e) => patch({ minStars: e.target.value ? Number(e.target.value) : undefined })}>
-                <option value="">{ts('anyStars')}</option>
-                {[3, 4, 5].map((n) => <option key={n} value={n}>{'★'.repeat(n)}</option>)}
-              </Select>
-            </Field>
+            <FormSelect label={ts('minStars')} name="minStars" value={filters.minStars ? String(filters.minStars) : ''}
+              onValueChange={(v) => patch({ minStars: v ? Number(v) : undefined })}
+              options={[{ value: '', label: ts('anyStars') }, ...[3, 4, 5].map((n) => ({ value: String(n), label: `${'★'.repeat(n)} ${tm('stars', { n })}` }))]} />
             <fieldset className="flex flex-col gap-2">
               <legend className="mb-1 text-sm font-semibold text-fg">{ts('mealPlans')}</legend>
               {MEAL_PLANS.map((m) => (
@@ -107,13 +105,9 @@ export function SearchResults({ input, storefront, offerActions }: { input: Sear
       <section aria-live="polite" aria-busy={results.isFetching} className="flex min-w-0 flex-col gap-4">
         <div className="flex flex-wrap items-center justify-between gap-3">
           <p className="text-sm font-medium text-fg" data-testid="results-count">{data ? ts('resultsCount', { count: data.total }) : ts('searching')}</p>
-          <Field label={ts('sort')} className="w-48">
-            <Select name="sort" value={sort} onChange={(e) => { setPage(1); setSort(e.target.value as Sort); }}>
-              <option value="price_asc">{ts('sortPriceAsc')}</option><option value="price_desc">{ts('sortPriceDesc')}</option>
-              <option value="rating">{ts('sortRating')}</option><option value="name">{ts('sortName')}</option>
-              {hotel && <option value="distance">{tm('sortDistance')}</option>}
-            </Select>
-          </Field>
+          <FormSelect label={ts('sort')} className="w-52" name="sort" value={sort} onValueChange={(v) => { setPage(1); setSort(v as Sort); }}
+            options={[{ value: 'price_asc', label: ts('sortPriceAsc') }, { value: 'price_desc', label: ts('sortPriceDesc') }, { value: 'rating', label: ts('sortRating') }, { value: 'name', label: ts('sortName') },
+              ...(hotel ? [{ value: 'distance', label: tm('sortDistance') }] : [])]} />
           {hotel && (
             <div className="flex w-full items-center gap-1 rounded-lg border border-border bg-surface p-1 sm:w-auto" role="group" aria-label={tm('viewMode')} data-testid="view-toggle">
               {([['list', List, tm('viewList')], ['split', PanelRight, tm('viewSplit')], ['map', MapIcon, tm('viewMap')]] as const).map(([v, Icon, label]) => (

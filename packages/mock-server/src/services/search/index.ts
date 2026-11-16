@@ -142,7 +142,7 @@ function priceOption(ctx: RequestContext, c: Candidate, unit: RateUnit, k: Offer
       offerId: encodeOffer({ ...k, source: c.source, productKey: c.product.id, unitId: unit.id }),
       source: c.source, ownership: c.ownership, unitName: unit.name, mealPlan: unit.mealPlan, refundable: !unit.policy.nonRefundable, policy: unit.policy,
       nights: built.nights, quantity: built.quantity, times: unit.times, priceMinor: breakdown.totals.customerTotalMinor, taxMinor: breakdown.totals.taxMinor,
-      buyMinor: buy, marginMinor: marginOf(breakdown.settlement, viewer.audience), currency: viewer.currency, available: built.available,
+      buyMinor: buy, marginMinor: marginOf(breakdown.settlement, viewer.audience), currency: viewer.currency, available: built.available, capacity: unit.maxAdults,
     },
   };
 }

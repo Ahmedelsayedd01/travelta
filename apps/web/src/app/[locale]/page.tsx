@@ -1,7 +1,9 @@
 import { ArrowRight, BadgePercent, Briefcase, CalendarCheck, CheckCircle2, Globe2, Lock, Search, ShieldCheck, Store, Truck, Users } from 'lucide-react';
 import { getTranslations, setRequestLocale } from 'next-intl/server';
 import { buttonVariants } from '@/components/ui/button';
+import { MockApiGate } from '@/components/api-provider';
 import { TravelPhoto } from '@/components/brand/product-thumb';
+import { CategoryShowcase } from '@/features/search/categories/showcase';
 import { FeaturedDestinations, PopularRow } from '@/features/storefront/discovery';
 import { HeroSearch, ServiceTiles, StoreShell } from '@/features/storefront/store-shell';
 import { Link } from '@/i18n/navigation';
@@ -54,6 +56,10 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
           </div>
           <HeroSearch />
         </div>
+      </section>
+
+      <section className="mx-auto max-w-6xl px-4 pt-14">
+        <MockApiGate fallback={null}><CategoryShowcase /></MockApiGate>
       </section>
 
       <section className="mx-auto max-w-6xl px-4 py-14">
