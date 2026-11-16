@@ -12,6 +12,9 @@ import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
 import { Field } from '@/components/ui/field';
 import { Input } from '@/components/ui/input';
+import { PasswordInput } from '@/components/ui/password-input';
+import { Checkbox } from '@/components/ui/checkbox';
+import { rememberSession, setRememberSession } from '@/lib/session';
 import { Link, useRouter } from '@/i18n/navigation';
 import { useErrorMessage } from '@/lib/errors';
 import { PORTAL_ROOT, safeNext } from '@/lib/nav';
@@ -40,8 +43,10 @@ export function LoginForm({ audience, storefront, storefrontOrg, onDone }: { aud
   const [formError, setFormError] = useState<string | null>(null);
   const form = useForm<LoginInput>({ resolver: zodResolver(loginInputSchema), defaultValues: { email: '', password: '', audience } });
 
+  const [remember, setRemember] = useState(rememberSession);
   const onSubmit = form.handleSubmit((values) => {
     setFormError(null);
+    setRememberSession(remember);
     login.mutate(storefront ? { ...values, storefront } : values, {
       onSuccess: afterLogin,
       onError: (error) => {
@@ -65,13 +70,16 @@ export function LoginForm({ audience, storefront, storefrontOrg, onDone }: { aud
           <Input type="email" autoComplete="email" dir="ltr" {...form.register('email')} />
         </Field>
         <Field label={t('password')} required error={form.formState.errors.password?.message}>
-          <Input type="password" autoComplete="current-password" dir="ltr" {...form.register('password')} />
+          <PasswordInput autoComplete="current-password" {...form.register('password')} />
         </Field>
-        {!storefront && (
-          <Link href={audience === 'customer' ? '/account/forgot-password' : '/forgot-password'} className="-mt-2 self-end text-sm font-medium text-primary hover:underline" data-testid="forgot-link">
-            {t('forgotPassword')}
-          </Link>
-        )}
+        <div className="-mt-1 flex flex-wrap items-center justify-between gap-2">
+          <Checkbox label={t('keepSignedIn')} checked={remember} onCheckedChange={setRemember} />
+          {!storefront && (
+            <Link href={audience === 'customer' ? '/account/forgot-password' : '/forgot-password'} className="text-sm font-medium text-primary hover:underline" data-testid="forgot-link">
+              {t('forgotPassword')}
+            </Link>
+          )}
+        </div>
         {formError && (
           <p id="login-error" role="alert" className="rounded-md bg-danger-bg px-3 py-2 text-sm font-medium text-danger">
             {formError}

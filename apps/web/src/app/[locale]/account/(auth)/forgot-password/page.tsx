@@ -13,7 +13,7 @@ export default async function CustomerForgotPasswordPage({ params }: { params: P
   setRequestLocale(asLocale(locale));
   const t = await getTranslations('auth');
   return (
-    <AuthCard title={t('forgotTitle')} subtitle={t('customerSubtitle')}>
+    <AuthCard audience="customer" image="dest-aswan" title={t('forgotTitle')} subtitle={t('customerSubtitle')}>
       <MockApiGate><PasswordRecovery audience="customer" loginHref="/account/login" /></MockApiGate>
     </AuthCard>
   );

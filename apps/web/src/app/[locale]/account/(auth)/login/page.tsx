@@ -16,7 +16,7 @@ export default async function CustomerLoginPage({ params }: { params: Promise<{ 
   setRequestLocale(asLocale(locale));
   const t = await getTranslations('auth');
   return (
-    <AuthCard
+    <AuthCard audience="customer" image="dest-luxor"
       title={t('customerTitle')}
       subtitle={t('customerSubtitle')}
       footer={

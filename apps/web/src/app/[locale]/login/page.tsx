@@ -17,7 +17,7 @@ export default async function StaffLoginPage({ params }: { params: Promise<{ loc
   const t = await getTranslations('auth');
   const tHome = await getTranslations('home');
   return (
-    <AuthCard
+    <AuthCard audience="business" image="flight-wing"
       title={t('staffTitle')}
       subtitle={t('staffSubtitle')}
       footer={

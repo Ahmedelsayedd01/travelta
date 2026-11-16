@@ -1,6 +1,8 @@
-import { ArrowRight, BadgePercent, Briefcase, CheckCircle2, Globe2, Lock, ShieldCheck, Store, Truck, Users } from 'lucide-react';
+import { ArrowRight, BadgePercent, Briefcase, CalendarCheck, CheckCircle2, Globe2, Lock, Search, ShieldCheck, Store, Truck, Users } from 'lucide-react';
 import { getTranslations, setRequestLocale } from 'next-intl/server';
 import { buttonVariants } from '@/components/ui/button';
+import { TravelPhoto } from '@/components/brand/product-thumb';
+import { FeaturedDestinations, PopularRow } from '@/features/storefront/discovery';
 import { HeroSearch, ServiceTiles, StoreShell } from '@/features/storefront/store-shell';
 import { Link } from '@/i18n/navigation';
 import { asLocale } from '@/i18n/routing';
@@ -20,6 +22,11 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
     { icon: Truck, title: t('home.supplierTitle'), body: t('home.supplierBody') },
     { icon: Users, title: t('home.travellerTitle'), body: t('home.travellerBody') },
   ];
+  const why = [
+    { icon: Search, title: t('home.why1Title'), body: t('home.why1Body') },
+    { icon: ShieldCheck, title: t('home.why2Title'), body: t('home.why2Body') },
+    { icon: CalendarCheck, title: t('home.why3Title'), body: t('home.why3Body') },
+  ];
   const trust = [
     { icon: ShieldCheck, text: t('home.trust1') },
     { icon: Lock, text: t('home.trust2') },
@@ -29,7 +36,9 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
   return (
     <StoreShell>
       <section className="relative overflow-hidden bg-hero text-on-hero">
-        <div className="pointer-events-none absolute inset-0 opacity-30 [background:radial-gradient(60rem_30rem_at_85%_-10%,var(--tv-accent),transparent_60%),radial-gradient(40rem_25rem_at_-10%_110%,var(--tv-primary),transparent_60%)]" aria-hidden />
+        {/* Licensed photo (see /credits) under a navy scrim that keeps every hero text at AA contrast. */}
+        <TravelPhoto image="tour-pyramids" variant="hero" className="absolute inset-0" priority decorative />
+        <div className="pointer-events-none absolute inset-0 bg-gradient-to-r from-[#102A43]/95 via-[#102A43]/80 to-[#102A43]/45 rtl:bg-gradient-to-l" aria-hidden />
         <div className="relative mx-auto flex max-w-6xl flex-col gap-8 px-4 py-12 sm:py-16">
           <div>
             <p className="mb-4 inline-flex items-center gap-2 rounded-full bg-white/10 px-3 py-1 text-xs font-semibold tracking-wide uppercase">
@@ -51,6 +60,43 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
         <h2 className="text-2xl font-semibold text-fg sm:text-3xl">{t('home.servicesTitle')}</h2>
         <p className="mt-2 max-w-2xl text-fg-muted">{t('home.servicesBody')}</p>
         <ServiceTiles />
+      </section>
+
+      <section className="mx-auto max-w-6xl px-4 pb-6">
+        <h2 className="text-2xl font-semibold text-fg sm:text-3xl">{t('home.destinationsTitle')}</h2>
+        <p className="mt-2 max-w-2xl text-fg-muted">{t('home.destinationsBody')}</p>
+        <FeaturedDestinations />
+        <PopularRow serviceType="hotel" destinationCode="CAI" title={t('home.popularHotels')} />
+        <PopularRow serviceType="tour" destinationCode="LXR" title={t('home.popularTours')} />
+        <PopularRow serviceType="umrah" destinationCode="MKX" title={t('home.popularUmrah')} />
+        <PopularRow serviceType="activity" destinationCode="HRG" title={t('home.popularActivities')} />
+      </section>
+
+      <section className="mx-auto max-w-6xl px-4 py-14">
+        <div className="grid gap-10 lg:grid-cols-2">
+          <div>
+            <h2 className="text-2xl font-semibold text-fg sm:text-3xl">{t('home.whyTitle')}</h2>
+            <ul className="mt-6 flex flex-col gap-5">
+              {why.map(({ icon: Icon, title, body }) => (
+                <li key={title} className="flex gap-4">
+                  <span className="flex size-11 shrink-0 items-center justify-center rounded-lg bg-primary-soft text-on-primary-soft"><Icon className="size-5" aria-hidden /></span>
+                  <span><span className="block font-semibold text-fg">{title}</span><span className="text-sm text-fg-muted">{body}</span></span>
+                </li>
+              ))}
+            </ul>
+          </div>
+          <div>
+            <h2 className="text-2xl font-semibold text-fg sm:text-3xl">{t('home.howTitle')}</h2>
+            <ol className="mt-6 flex flex-col gap-4">
+              {[1, 2, 3].map((n) => (
+                <li key={n} className="flex gap-4 rounded-xl border border-border bg-surface p-5">
+                  <span className="flex size-9 shrink-0 items-center justify-center rounded-full bg-secondary font-bold text-on-secondary" aria-hidden>{n}</span>
+                  <span><span className="block font-semibold text-fg">{t(`home.how${n}Title` as never)}</span><span className="text-sm text-fg-muted">{t(`home.how${n}Body` as never)}</span></span>
+                </li>
+              ))}
+            </ol>
+          </div>
+        </div>
       </section>
 
       <section className="mx-auto max-w-6xl px-4 pb-14">

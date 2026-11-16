@@ -4,6 +4,7 @@ import { StatusBar } from 'expo-status-bar';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { ApiProvider } from '@/lib/api-provider';
 import { ThemeProvider, useTheme } from '@/lib/theme';
+import { WebToaster } from '@/lib/alert';
 
 function ThemedStack() {
   const { c, scheme } = useTheme();
@@ -20,6 +21,7 @@ function ThemedStack() {
         <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
       </Stack>
       <StatusBar style={scheme === 'dark' ? 'light' : 'dark'} />
+      <WebToaster />
     </>
   );
 }

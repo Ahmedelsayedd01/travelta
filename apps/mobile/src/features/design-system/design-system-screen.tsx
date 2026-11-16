@@ -4,7 +4,8 @@ import { emailSchema, requiredText, z } from '@travelta/schemas';
 import { formatMoney, money } from '@travelta/shared';
 import { Controller, useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
-import { Alert, Pressable, ScrollView, View } from 'react-native';
+import {Pressable, ScrollView, View } from 'react-native';
+import { showAlert } from '@/lib/alert';
 import { Badge, type BadgeTone } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
@@ -71,7 +72,7 @@ export function DesignSystemScreen() {
         <Button label={t('common.confirm')} />
         <Button label={t('common.save')} variant="secondary" />
         <Button label={t('common.cancel')} variant="outline" />
-        <Button label={t('common.delete')} variant="danger" onPress={() => Alert.alert(t('designSystem.dialogTitle'), t('designSystem.dialogBody'), [{ text: t('common.cancel'), style: 'cancel' }, { text: t('common.confirm'), style: 'destructive' }])} />
+        <Button label={t('common.delete')} variant="danger" onPress={() => showAlert(t('designSystem.dialogTitle'), t('designSystem.dialogBody'), [{ text: t('common.cancel'), style: 'cancel' }, { text: t('common.confirm'), style: 'destructive' }])} />
         <Button label={t('common.loading')} loading />
       </View>
 
@@ -83,7 +84,7 @@ export function DesignSystemScreen() {
         <Controller control={control} name="email" render={({ field }) => (
           <TextField label={t('designSystem.sampleEmail')} required value={field.value} onChangeText={field.onChange} onBlur={field.onBlur} error={formState.errors.email?.message} keyboardType="email-address" autoCapitalize="none" autoComplete="email" />
         )} />
-        <Button label={t('common.submit')} onPress={() => void handleSubmit(() => Alert.alert(t('designSystem.sampleSubmitted')))()} />
+        <Button label={t('common.submit')} onPress={() => void handleSubmit(() => showAlert(t('designSystem.sampleSubmitted')))()} />
       </Card>
 
       <Text size="xl" weight="semibold">{t('designSystem.badges')}</Text>

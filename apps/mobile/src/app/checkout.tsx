@@ -2,11 +2,12 @@ import { useMutation, useQuery } from '@tanstack/react-query';
 import type { CartItemDto, CheckoutInput, ItemDetails, Traveller } from '@travelta/schemas';
 import { ApiClientError } from '@travelta/api-client';
 import * as DocumentPicker from 'expo-document-picker';
-import { File } from 'expo-file-system';
+import { readBase64 } from '@/lib/files';
 import { router, Stack } from 'expo-router';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Alert, View } from 'react-native';
+import {View } from 'react-native';
+import { showAlert } from '@/lib/alert';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
@@ -52,7 +53,7 @@ export default function Checkout() {
       if (e instanceof ApiClientError) {
         setErrors(e.fieldErrors());
         if (e.code === 'PRICE_CHANGED' || e.code === 'SOLD_OUT') void recheck.refetch();
-        Alert.alert(t(`errors.${e.code}`));
+        showAlert(t(`errors.${e.code}`));
       }
     },
   });
@@ -61,7 +62,7 @@ export default function Checkout() {
     const r = await DocumentPicker.getDocumentAsync({ type: ['application/pdf', 'image/jpeg', 'image/png'], copyToCacheDirectory: true });
     const a = r.assets?.[0];
     if (r.canceled || !a) return;
-    const b64 = await new File(a.uri).base64();
+    const b64 = await readBase64(a.uri);
     const file = { name: a.name.slice(0, 160), type: (a.mimeType ?? 'image/jpeg') as 'application/pdf', size: a.size ?? b64.length, dataUrl: `data:${a.mimeType ?? 'image/jpeg'};base64,${b64}` };
     setDetails({ ...details, [itemId]: { ...(details[itemId] ?? {}), documents: [...(details[itemId]?.documents ?? []), file] } });
   };

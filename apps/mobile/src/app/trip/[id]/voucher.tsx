@@ -1,9 +1,9 @@
 import { useQuery } from '@tanstack/react-query';
-import * as Print from 'expo-print';
-import * as Sharing from 'expo-sharing';
+import { sharePdf } from '@/lib/files';
 import { Stack, useLocalSearchParams } from 'expo-router';
 import { useTranslation } from 'react-i18next';
-import { Alert, View } from 'react-native';
+import {View } from 'react-native';
+import { showAlert } from '@/lib/alert';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { ErrorState, Skeleton } from '@/components/ui/feedback';
@@ -35,11 +35,10 @@ export default function VoucherScreen() {
       <p>${esc(day(i.from))}${i.to ? ` → ${esc(day(i.to))}` : ''}</p><p>${esc(t('bookings.supplierRef'))}: ${esc(i.supplierRef ?? '')}</p>
       <ul>${i.travellers.map((tr) => `<li>${esc(tr.firstName)} ${esc(tr.lastName)}</li>`).join('')}</ul><p style="color:#64748b">${esc(t('bookings.voucherPresent'))}</p></body></html>`;
     try {
-      const { uri } = await Print.printToFileAsync({ html });
-      if (await Sharing.isAvailableAsync()) await Sharing.shareAsync(uri, { mimeType: 'application/pdf', dialogTitle: i.voucherNo! });
-      else Alert.alert(t('mobile.shareUnavailable'));
+      // Native: PDF + share sheet. Web: the browser print dialog (Save as PDF) — see lib/files/index.web.ts.
+      await sharePdf(html, i.voucherNo!);
     } catch {
-      Alert.alert(t('errors.INTERNAL'));
+      showAlert(t('errors.INTERNAL'));
     }
   };
   return (

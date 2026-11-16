@@ -38,6 +38,14 @@
     ],
     "experiments": {
       "typedRoutes": true
+    },
+    "web": {
+      "bundler": "metro",
+      "output": "single",
+      "favicon": "./assets/favicon.png",
+      "name": "Travelta",
+      "themeColor": "#0F766E",
+      "backgroundColor": "#F8FAFC"
     }
   }
 }

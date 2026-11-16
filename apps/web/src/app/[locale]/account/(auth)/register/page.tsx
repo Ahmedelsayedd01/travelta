@@ -15,7 +15,7 @@ export default async function RegisterPage({ params }: { params: Promise<{ local
   setRequestLocale(asLocale(locale));
   const t = await getTranslations('auth');
   return (
-    <AuthCard
+    <AuthCard audience="customer" image="hotel-pool"
       title={t('registerTitle')}
       subtitle={t('registerSubtitle')}
       footer={

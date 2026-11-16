@@ -2,7 +2,8 @@ import { useQuery } from '@tanstack/react-query';
 import { SERVICE_TYPES } from '@travelta/contracts';
 import { router } from 'expo-router';
 import { useTranslation } from 'react-i18next';
-import { Pressable, ScrollView, View } from 'react-native';
+import { Image, Pressable, ScrollView, View } from 'react-native';
+import { DESTINATION_IMAGES, imageForProduct, imageSource, SERVICE_IMAGES } from '@/lib/travel-images';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -45,7 +46,9 @@ export default function HomeTab() {
             {unread > 0 && <View style={{ position: 'absolute', top: 4, right: 2, minWidth: 18, height: 18, borderRadius: 9, backgroundColor: c.danger, alignItems: 'center', justifyContent: 'center', paddingHorizontal: 4 }}><Text size="xs" weight="bold" style={{ color: c.canvas }}>{unread}</Text></View>}
           </Pressable>
         </Row>
-        <View style={{ backgroundColor: c.hero, borderRadius: 16, padding: 20, gap: 8 }}>
+        <View style={{ backgroundColor: c.hero, borderRadius: 16, padding: 20, gap: 8, overflow: 'hidden' }}>
+          <Image source={imageSource('dest-giza')} resizeMode="cover" style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%' }} accessibilityIgnoresInvertColors />
+          <View style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: 'rgba(16,42,67,0.72)' }} />
           <Text size="2xl" weight="bold" style={{ color: c['on-hero'] }}>{session ? t('store.hello', { name: session.user.name.split(' ')[0] }) : t('common.appName')}</Text>
           <Text style={{ color: c['hero-muted'] }}>{t('store.heroBody')}</Text>
           <Button label={t('store.bookTrip')} onPress={() => router.push('/search')} testID="home-search" />
@@ -54,8 +57,11 @@ export default function HomeTab() {
         <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 10 }}>
           {SERVICE_TYPES.map((s) => (
             <Pressable key={s} onPress={() => router.push({ pathname: '/search', params: { service: s } })} accessibilityRole="button" testID={`service-${s}`}
-              style={{ width: '30.5%', minHeight: 72, borderRadius: 12, borderWidth: 1, borderColor: c.border, backgroundColor: c.surface, alignItems: 'center', justifyContent: 'center', padding: 8 }}>
-              <Text size="sm" weight="semibold" style={{ textAlign: 'center' }}>{t(`enums.serviceType.${s}`)}</Text>
+              accessibilityLabel={t(`enums.serviceType.${s}`)}
+              style={{ width: '31%', height: 96, borderRadius: 14, overflow: 'hidden', backgroundColor: c.secondary, justifyContent: 'flex-end' }}>
+              <Image source={imageSource(SERVICE_IMAGES[s][0]!)} resizeMode="cover" style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%' }} accessibilityIgnoresInvertColors />
+              <View style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: 'rgba(16,42,67,0.45)' }} />
+              <Text size="sm" weight="bold" style={{ color: '#FFFFFF', padding: 8 }}>{t(`enums.serviceType.${s}`)}</Text>
             </Pressable>
           ))}
         </View>
@@ -73,8 +79,11 @@ export default function HomeTab() {
           <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ gap: 10 }}>
             {featured.map((d, i) => (
               <Pressable key={d.id} onPress={() => router.push({ pathname: '/search', params: { service: 'hotel', dest: d.code } })} accessibilityRole="button" testID={`featured-${d.code}`}
-                style={{ width: 140, height: 96, borderRadius: 14, padding: 12, justifyContent: 'flex-end', backgroundColor: [c.hero, c.secondary, c.primary, c.accent][i % 4] }}>
-                <Text weight="bold" style={{ color: i % 4 === 3 ? c['on-accent'] : c['on-primary'] }}>{d.name[activeLocale]}</Text>
+                accessibilityLabel={d.name[activeLocale]}
+                style={{ width: 150, height: 110, borderRadius: 14, overflow: 'hidden', justifyContent: 'flex-end', backgroundColor: [c.hero, c.secondary, c.primary, c.accent][i % 4] }}>
+                {DESTINATION_IMAGES[d.code] && <Image source={imageSource(DESTINATION_IMAGES[d.code]!)} resizeMode="cover" style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%' }} />}
+                <View style={{ position: 'absolute', left: 0, right: 0, bottom: 0, height: 56, backgroundColor: 'rgba(16,42,67,0.6)' }} />
+                <Text weight="bold" style={{ color: '#FFFFFF', padding: 10 }}>{d.name[activeLocale]}</Text>
               </Pressable>
             ))}
           </ScrollView>
@@ -85,10 +94,13 @@ export default function HomeTab() {
             <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ gap: 10 }}>
               {(recommended.data?.items ?? []).map((r) => (
                 <Pressable key={r.key} accessibilityRole="button" onPress={() => { if (recInput) setInput(recInput); select(r); router.push('/search/product'); }}
-                  style={{ width: 200, borderRadius: 14, borderWidth: 1, borderColor: c.border, backgroundColor: c.surface, padding: 12, gap: 4 }}>
+                  style={{ width: 210, borderRadius: 14, borderWidth: 1, borderColor: c.border, backgroundColor: c.surface, overflow: 'hidden' }}>
+                  <Image source={imageSource(imageForProduct(r.serviceType, r.imageSeed))} resizeMode="cover" style={{ width: '100%', height: 110 }} />
+                  <View style={{ padding: 12, gap: 4 }}>
                   <Text weight="semibold" numberOfLines={2}>{r.name[activeLocale]}</Text>
                   <Text tone="muted" size="xs">★ {r.rating.toFixed(1)} · {r.reviews}</Text>
                   <Text numeric weight="bold">{money(r.cheapest.priceMinor, r.cheapest.currency)}</Text>
+                  </View>
                 </Pressable>
               ))}
             </ScrollView>

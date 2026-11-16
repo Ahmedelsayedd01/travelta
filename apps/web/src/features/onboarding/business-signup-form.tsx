@@ -14,6 +14,7 @@ import { SERVICE_ICONS } from '@/components/brand/brand';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Field } from '@/components/ui/field';
+import { PasswordInput } from '@/components/ui/password-input';
 import { Input, Select } from '@/components/ui/input';
 import { Stepper } from '@/components/ui/stepper';
 import { useRouter } from '@/i18n/navigation';
@@ -126,7 +127,7 @@ export function BusinessSignupForm() {
         <Field label={t('auth.name')} required error={e.owner?.name?.message}><Input autoComplete="name" {...form.register('owner.name')} /></Field>
         <Field label={t('auth.email')} required error={e.owner?.email?.message}><Input type="email" autoComplete="email" dir="ltr" {...form.register('owner.email')} /></Field>
         <Field className="sm:col-span-2" label={t('auth.password')} required help={t('auth.passwordHelp')} error={e.owner?.password?.message}>
-          <Input type="password" autoComplete="new-password" dir="ltr" {...form.register('owner.password')} />
+          <PasswordInput autoComplete="new-password" {...form.register('owner.password')} />
         </Field>
       </fieldset>
 

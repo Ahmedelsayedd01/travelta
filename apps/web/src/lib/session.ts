@@ -16,6 +16,25 @@ interface SessionState {
   clear: () => void;
 }
 
+const REMEMBER_KEY = 'travelta:remember';
+const safe = <T,>(fn: () => T, fallback: T): T => { try { return fn(); } catch { return fallback; } };
+
+/** "Keep me signed in": on (default) = localStorage (survives restarts); off = sessionStorage (ends with the tab). */
+export function setRememberSession(remember: boolean): void {
+  safe(() => localStorage.setItem(REMEMBER_KEY, remember ? '1' : '0'), undefined);
+}
+export const rememberSession = (): boolean => safe(() => localStorage.getItem(REMEMBER_KEY) !== '0', true);
+
+const sessionStorageChoice = {
+  getItem: (name: string) => safe(() => localStorage.getItem(name) ?? sessionStorage.getItem(name), null),
+  setItem: (name: string, value: string) => safe(() => {
+    const keep = rememberSession();
+    (keep ? localStorage : sessionStorage).setItem(name, value);
+    (keep ? sessionStorage : localStorage).removeItem(name);
+  }, undefined),
+  removeItem: (name: string) => safe(() => { localStorage.removeItem(name); sessionStorage.removeItem(name); }, undefined),
+};
+
 export const useSession = create<SessionState>()(
   persist(
     (set) => ({
@@ -24,7 +43,7 @@ export const useSession = create<SessionState>()(
       setSession: (session) => set({ token: session.token, session }),
       clear: () => set({ token: null, session: null }),
     }),
-    { name: 'travelta:session', storage: createJSONStorage(() => localStorage) },
+    { name: 'travelta:session', storage: createJSONStorage(() => sessionStorageChoice) },
   ),
 );
 

@@ -16,7 +16,7 @@ export default async function BusinessRegisterPage({ params }: { params: Promise
   setRequestLocale(asLocale(locale));
   const t = await getTranslations();
   return (
-    <AuthCard
+    <AuthCard audience="business" image="dest-cairo"
       wide
       title={t('onboarding.title')}
       subtitle={t('onboarding.subtitle')}

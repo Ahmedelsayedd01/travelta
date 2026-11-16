@@ -84,3 +84,17 @@ describe('server messages ⇄ i18n', () => {
     expect(missing).toEqual([]);
   });
 });
+
+describe('travel photo catalogue ⇄ app assets', () => {
+  it('every catalogue key has its web hero, web card and mobile file', async () => {
+    const { existsSync } = await import('node:fs');
+    const { join } = await import('node:path');
+    const { TRAVEL_IMAGE_KEYS } = await import('@travelta/shared');
+    const root = join(import.meta.dirname, '../../..');
+    const missing = TRAVEL_IMAGE_KEYS.flatMap((k) => [
+      `apps/web/public/images/travel/${k}.jpg`, `apps/web/public/images/travel/card/${k}.jpg`, `apps/mobile/assets/travel/${k}.jpg`,
+    ]).filter((f) => !existsSync(join(root, f)));
+    expect(TRAVEL_IMAGE_KEYS.length).toBe(40);
+    expect(missing).toEqual([]);
+  });
+});

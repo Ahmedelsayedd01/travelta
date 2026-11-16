@@ -2,7 +2,7 @@ import { reloadAppAsync } from 'expo';
 import { getLocales } from 'expo-localization';
 import { createInstance } from 'i18next';
 import ICU from 'i18next-icu';
-import { I18nManager } from 'react-native';
+import { I18nManager, Platform } from 'react-native';
 import { initReactI18next } from 'react-i18next';
 import type { Locale } from '@travelta/contracts';
 import { localeMeta, resources } from '@travelta/i18n';
@@ -12,7 +12,14 @@ import { localeMeta, resources } from '@travelta/i18n';
  * RTL flag: switching language flips `forceRTL` and reloads the JS app (MOBILE_ARCHITECTURE §5).
  * On first launch the native flag follows the device language (supportsRTL is enabled in app.json).
  */
+const WEB_LOCALE_KEY = 'travelta:locale';
+
 function initialLocale(): Locale {
+  // Expo Web: react-native-web's I18nManager is a stub that persists nothing, so the choice is kept in localStorage.
+  if (Platform.OS === 'web') {
+    const saved = (() => { try { return globalThis.localStorage?.getItem(WEB_LOCALE_KEY); } catch { return null; } })();
+    if (saved === 'ar' || saved === 'en') return saved;
+  }
   if (I18nManager.isRTL) return 'ar';
   const device = getLocales()[0]?.languageCode;
   return device === 'ar' ? 'ar' : 'en';
@@ -36,9 +43,20 @@ void i18next
 
 export const isRtl = localeMeta[activeLocale].dir === 'rtl';
 
+// Web: text direction and language come from the document (layout mirroring is done per component via `rtl`).
+if (Platform.OS === 'web' && typeof document !== 'undefined') {
+  document.documentElement.lang = activeLocale;
+  document.documentElement.dir = localeMeta[activeLocale].dir;
+}
+
 /** Change language: persist direction natively, then reload so every screen re-lays out. */
 export async function switchLocale(next: Locale): Promise<void> {
   if (next === activeLocale) return;
+  if (Platform.OS === 'web') {
+    try { globalThis.localStorage?.setItem(WEB_LOCALE_KEY, next); } catch { /* storage blocked */ }
+    globalThis.location?.reload();
+    return;
+  }
   const rtl = localeMeta[next].dir === 'rtl';
   I18nManager.allowRTL(rtl);
   I18nManager.forceRTL(rtl);

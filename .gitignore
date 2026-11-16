@@ -30,3 +30,7 @@ test-results/
 e2e-results/
 e2e-report/
 playwright/.cache/
+
+# Expo Web export and its browser-test outputs (apps/mobile)
+apps/mobile/e2e-web-results/
+apps/mobile/e2e-web-report/

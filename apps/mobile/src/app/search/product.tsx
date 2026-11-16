@@ -1,6 +1,7 @@
 import { router, Stack } from 'expo-router';
 import { useTranslation } from 'react-i18next';
-import { View } from 'react-native';
+import { Image, View } from 'react-native';
+import { imageAlt, imageForProduct, imageSource } from '@/lib/travel-images';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
@@ -28,12 +29,14 @@ export default function Product() {
   return (
     <Screen>
       <Stack.Screen options={{ title: r.name[activeLocale] }} />
+      <Image source={imageSource(imageForProduct(r.serviceType, r.imageSeed))} accessibilityLabel={imageAlt(imageForProduct(r.serviceType, r.imageSeed), activeLocale)}
+        resizeMode="cover" style={{ width: '100%', height: 200, borderRadius: 14 }} testID="m-product-photo" />
       <View style={{ gap: 4 }}>
         <Text size="xl" weight="bold">{r.name[activeLocale]}</Text>
         <Text tone="muted">{r.destinationName[activeLocale]} · ★ {r.rating.toFixed(1)}</Text>
         <Text size="sm">{r.description[activeLocale]}</Text>
       </View>
-      <View style={{ position: 'absolute', top: 8, right: 8 }}><Heart result={r} /></View>
+      <View style={{ position: 'absolute', top: 24, right: 24, backgroundColor: 'rgba(255,255,255,0.9)', borderRadius: 22 }}><Heart result={r} /></View>
       {r.options.map((o) => (
         <Card key={o.offerId} style={{ gap: 8 }} testID="mobile-option">
           <Text weight="semibold">{o.unitName[activeLocale]}</Text>

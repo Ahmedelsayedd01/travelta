@@ -1,7 +1,8 @@
 import { useQuery } from '@tanstack/react-query';
 import { router, Stack } from 'expo-router';
 import { useTranslation } from 'react-i18next';
-import { FlatList, Pressable, View } from 'react-native';
+import { FlatList, Image, Pressable, View } from 'react-native';
+import { imageForProduct, imageSource } from '@/lib/travel-images';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Heart } from '@/features/favorites/heart';
@@ -42,7 +43,9 @@ export default function Results() {
           ListEmptyComponent={<EmptyState title={t('search.noResultsTitle')} body={t('search.noResultsBody')} />}
           renderItem={({ item }) => (
             <Pressable onPress={() => { select(item); router.push('/search/product'); }} accessibilityRole="button" testID="mobile-result"
-              style={{ backgroundColor: c.surface, borderRadius: 12, borderWidth: 1, borderColor: c.border, padding: 14, gap: 6 }}>
+              style={{ backgroundColor: c.surface, borderRadius: 12, borderWidth: 1, borderColor: c.border, overflow: 'hidden' }}>
+              <Image source={imageSource(imageForProduct(item.serviceType, item.imageSeed))} resizeMode="cover" style={{ width: '100%', height: 140 }} />
+              <View style={{ padding: 14, gap: 6 }}>
               <Row style={{ justifyContent: 'space-between', alignItems: 'flex-start' }}>
                 <Text weight="semibold" style={{ flex: 1 }}>{item.name[activeLocale]}</Text>
                 <Heart result={item} />
@@ -52,6 +55,7 @@ export default function Results() {
                 {item.cheapest.refundable ? <Badge label={t('search.refundable')} tone="success" /> : <Badge label={t('search.nonRefundable')} tone="warning" />}
                 <Text numeric weight="bold">{t('search.from')} {money(item.cheapest.priceMinor, item.cheapest.currency)}</Text>
               </Row>
+              </View>
             </Pressable>
           )} />
       )}

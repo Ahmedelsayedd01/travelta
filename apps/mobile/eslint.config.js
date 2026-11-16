@@ -20,5 +20,7 @@ module.exports = defineConfig([
       ],
     },
   },
-  { ignores: ['dist/*', '.expo/*'] },
+  // Playwright fixtures call `use()` — not a React hook; AxeBuilder is the package's documented default import.
+  { files: ['e2e-web/**/*.ts', 'playwright.config.ts'], rules: { 'react-hooks/rules-of-hooks': 'off', 'import/no-named-as-default': 'off' } },
+  { ignores: ['dist/*', '.expo/*', 'e2e-web-results/*', 'e2e-web-report/*'] },
 ]);

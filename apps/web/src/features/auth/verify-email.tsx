@@ -6,8 +6,7 @@ import { useState } from 'react';
 import { useApi } from '@/components/api-provider';
 import { Button } from '@/components/ui/button';
 import { Dialog } from '@/components/ui/dialog';
-import { Field } from '@/components/ui/field';
-import { Input } from '@/components/ui/input';
+import { OtpInput } from '@/components/ui/otp-input';
 import { useAction } from '@/lib/mutations';
 import { useSession } from '@/lib/session';
 import { DemoCodeNotice } from './password-recovery';
@@ -38,7 +37,7 @@ export function VerifyEmailBanner() {
           <Button loading={verify.isPending} disabled={!/^\d{6}$/.test(code)} onClick={() => verify.mutate(code)} data-testid="verify-email-submit">{t('verify')}</Button></>}>
         <div className="flex flex-col gap-4">
           <DemoCodeNotice code={demoCode} />
-          <Field label={t('code')} required><Input name="code" inputMode="numeric" autoComplete="one-time-code" dir="ltr" maxLength={6} value={code} onChange={(e) => setCode(e.target.value.replace(/\D/g, ''))} /></Field>
+          <OtpInput value={code} onChange={setCode} label={t('code')} autoFocus testId="verify-otp" />
         </div>
       </Dialog>
     </>

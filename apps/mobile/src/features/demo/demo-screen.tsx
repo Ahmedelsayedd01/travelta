@@ -1,7 +1,8 @@
 import { ApiClientError } from '@travelta/api-client';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Alert, ScrollView, View } from 'react-native';
+import {ScrollView, View } from 'react-native';
+import { showAlert } from '@/lib/alert';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/feedback';
@@ -30,8 +31,8 @@ export function DemoScreen() {
   const [sim, setSim] = useState<{ min: string; max: string; failure: string } | null>(null);
   const s = status.data;
 
-  const fail = (e: unknown) => Alert.alert(t('common.errorTitle'), e instanceof ApiClientError ? t(`errors.${e.code}`) : t('demo.importInvalid'));
-  const done = (key: string) => Alert.alert(t(key));
+  const fail = (e: unknown) => showAlert(t('common.errorTitle'), e instanceof ApiClientError ? t(`errors.${e.code}`) : t('demo.importInvalid'));
+  const done = (key: string) => showAlert(t(key));
 
   if (!s) {
     return (
@@ -109,7 +110,7 @@ export function DemoScreen() {
             void pickSnapshot()
               .then((picked) => {
                 if (!picked) return;
-                Alert.alert(t('demo.importTitle'), t('demo.importBody', { file: picked.name }), [
+                showAlert(t('demo.importTitle'), t('demo.importBody', { file: picked.name }), [
                   { text: t('common.cancel'), style: 'cancel' },
                   { text: t('demo.import'), onPress: () => actions.importSnapshot.mutate(picked.snapshot, { onSuccess: () => done('demo.importDone'), onError: fail }) },
                 ]);
@@ -122,7 +123,7 @@ export function DemoScreen() {
           variant="danger"
           loading={actions.reset.isPending}
           onPress={() =>
-            Alert.alert(t('demo.resetTitle'), t('demo.resetBody'), [
+            showAlert(t('demo.resetTitle'), t('demo.resetBody'), [
               { text: t('common.cancel'), style: 'cancel' },
               { text: t('demo.reset'), style: 'destructive', onPress: () => actions.reset.mutate(undefined, { onSuccess: () => done('demo.resetDone'), onError: fail }) },
             ])

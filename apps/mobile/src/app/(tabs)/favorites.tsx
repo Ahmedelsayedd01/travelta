@@ -1,6 +1,7 @@
 import { router } from 'expo-router';
 import { useTranslation } from 'react-i18next';
-import { Pressable, View } from 'react-native';
+import { Image, Pressable, View } from 'react-native';
+import { imageForProduct, imageSource } from '@/lib/travel-images';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Row, Screen } from '@/components/ui/layout';
@@ -22,6 +23,7 @@ export default function FavoritesTab() {
     <Screen onRefresh={() => void list.refetch()} refreshing={list.isFetching}>
       {!list.data ? <Skeleton style={{ height: 96 }} /> : list.data.length === 0 ? <EmptyState title={t('favorites.emptyTitle')} body={t('favorites.emptyBody')} /> : list.data.map((f) => (
         <Card key={f.id} style={{ gap: 6 }} testID="m-favorite-row">
+          <Image source={imageSource(imageForProduct(f.serviceType, f.imageSeed))} resizeMode="cover" style={{ width: '100%', height: 120, borderRadius: 10 }} />
           <Row style={{ justifyContent: 'space-between' }}>
             <Text weight="semibold" style={{ flex: 1 }}>{f.name[activeLocale]}</Text>
             <Pressable accessibilityRole="button" accessibilityLabel={t('favorites.remove', { name: f.name[activeLocale] })} hitSlop={8} style={{ minWidth: 44, minHeight: 44, alignItems: 'center', justifyContent: 'center' }}

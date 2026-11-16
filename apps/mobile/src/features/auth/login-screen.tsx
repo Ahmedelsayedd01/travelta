@@ -5,7 +5,8 @@ import { Link, router } from 'expo-router';
 import { useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
-import { KeyboardAvoidingView, Platform, ScrollView, View } from 'react-native';
+import { View } from 'react-native';
+import { AuthLayout } from '@/components/auth/auth-layout';
 import { Button } from '@/components/ui/button';
 import { Text } from '@/components/ui/text';
 import { TextField } from '@/components/ui/text-field';
@@ -31,16 +32,14 @@ export function LoginScreen() {
   const done = () => router.replace('/');
 
   return (
-    <KeyboardAvoidingView style={{ flex: 1, backgroundColor: c.canvas }} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
-      <ScrollView contentContainerStyle={{ padding: 16, gap: 16 }} keyboardShouldPersistTaps="handled">
-        <Text tone="muted">{t('auth.customerSubtitle')}</Text>
+    <AuthLayout image="dest-luxor" title={t('auth.customerTitle')} subtitle={t('auth.customerSubtitle')}>
         <Controller control={control} name="email" render={({ field }) => (
           <TextField label={t('auth.email')} required value={field.value} onChangeText={field.onChange} onBlur={field.onBlur}
             error={formState.errors.email?.message} keyboardType="email-address" autoCapitalize="none" autoComplete="email" textContentType="emailAddress" />
         )} />
         <Controller control={control} name="password" render={({ field }) => (
           <TextField label={t('auth.password')} required value={field.value} onChangeText={field.onChange} onBlur={field.onBlur}
-            error={formState.errors.password?.message} secureTextEntry autoComplete="current-password" textContentType="password" />
+            error={formState.errors.password?.message} secureToggle autoComplete="current-password" textContentType="password" testID="m-login-password" />
         )} />
         <Link href="/forgot-password" style={{ alignSelf: 'flex-end' }} testID="m-forgot-link"><Text size="sm" weight="semibold" tone="primary">{t('auth.forgotPassword')}</Text></Link>
         {formError ? (
@@ -63,7 +62,6 @@ export function LoginScreen() {
           <Text size="xs" tone="muted">{t('auth.demoHint')}</Text>
           <Button label="Sara Ali · customer@example.com" variant="outline" loading={demo.isPending} onPress={() => demo.mutate(undefined, { onSuccess: done, onError })} />
         </View>
-      </ScrollView>
-    </KeyboardAvoidingView>
+    </AuthLayout>
   );
 }

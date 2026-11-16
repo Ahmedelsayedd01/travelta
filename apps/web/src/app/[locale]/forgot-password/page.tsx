@@ -13,7 +13,7 @@ export default async function StaffForgotPasswordPage({ params }: { params: Prom
   setRequestLocale(asLocale(locale));
   const t = await getTranslations('auth');
   return (
-    <AuthCard title={t('forgotTitle')} subtitle={t('staffSubtitle')}>
+    <AuthCard audience="business" image="flight-wing" title={t('forgotTitle')} subtitle={t('staffSubtitle')}>
       <MockApiGate><PasswordRecovery audience="staff" loginHref="/login" /></MockApiGate>
     </AuthCard>
   );
