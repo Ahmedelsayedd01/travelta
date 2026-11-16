@@ -1,0 +1,26 @@
+{
+  "name": "@travelta/domain",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "scripts": {
+    "typecheck": "tsc --noEmit -p tsconfig.json",
+    "lint": "eslint .",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "@travelta/contracts": "workspace:*",
+    "@travelta/schemas": "workspace:*",
+    "@travelta/shared": "workspace:*"
+  },
+  "devDependencies": {
+    "@travelta/eslint-config": "workspace:*",
+    "@travelta/tsconfig": "workspace:*",
+    "eslint": "9.39.5",
+    "typescript": "6.0.3",
+    "vitest": "5.1.0"
+  }
+}

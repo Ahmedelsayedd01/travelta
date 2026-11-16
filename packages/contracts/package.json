@@ -1,0 +1,24 @@
+{
+  "name": "@travelta/contracts",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "scripts": {
+    "typecheck": "tsc --noEmit -p tsconfig.json",
+    "lint": "eslint .",
+    "test": "vitest run --passWithNoTests"
+  },
+  "dependencies": {
+    "@travelta/shared": "workspace:*"
+  },
+  "devDependencies": {
+    "@travelta/eslint-config": "workspace:*",
+    "@travelta/tsconfig": "workspace:*",
+    "eslint": "9.39.5",
+    "typescript": "6.0.3",
+    "vitest": "5.1.0"
+  }
+}

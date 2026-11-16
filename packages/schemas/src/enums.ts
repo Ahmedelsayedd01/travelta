@@ -1,0 +1,30 @@
+import { z } from 'zod';
+import * as c from '@travelta/contracts';
+import { msg } from './primitives';
+
+const e = <T extends readonly [string, ...string[]]>(values: T) => z.enum(values, { error: msg.invalidValue });
+
+export const serviceTypeSchema = e(c.SERVICE_TYPES);
+export const inventorySourceSchema = e(c.INVENTORY_SOURCES);
+export const supplierOwnershipSchema = e(c.SUPPLIER_OWNERSHIPS);
+export const orgTypeSchema = e(c.ORG_TYPES);
+export const orgStatusSchema = e(c.ORG_STATUSES);
+export const channelSchema = e(c.CHANNELS);
+export const bookingItemStatusSchema = e(c.BOOKING_ITEM_STATUSES);
+export const holdReasonSchema = e(c.HOLD_REASONS);
+export const paymentTypeSchema = e(c.PAYMENT_TYPES);
+export const paymentMethodSchema = e(c.PAYMENT_METHODS);
+export const paymentStatusSchema = e(c.PAYMENT_STATUSES);
+export const installmentStatusSchema = e(c.INSTALLMENT_STATUSES);
+export const invoiceStatusSchema = e(c.INVOICE_STATUSES);
+export const requestStageSchema = e(c.REQUEST_STAGES);
+export const leadStatusSchema = e(c.LEAD_STATUSES);
+export const prioritySchema = e(c.PRIORITIES);
+export const kycCaseStatusSchema = e(c.KYC_CASE_STATUSES);
+export const kycDocTypeSchema = e(c.KYC_DOC_TYPES);
+export const kycDocStatusSchema = e(c.KYC_DOC_STATUSES);
+export const markupLayerSchema = e(c.MARKUP_LAYERS);
+export const markupModeSchema = e(c.MARKUP_MODES);
+export const subscriptionStatusSchema = e(c.SUBSCRIPTION_STATUSES);
+export const unitTypeSchema = e(c.UNIT_TYPES);
+export const paxTypeSchema = e(c.PAX_TYPES);

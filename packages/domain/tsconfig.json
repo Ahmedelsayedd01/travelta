@@ -1,0 +1,4 @@
+{
+  "extends": "@travelta/tsconfig/library.json",
+  "include": ["src"]
+}

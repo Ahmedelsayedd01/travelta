@@ -1,0 +1,32 @@
+node_modules/
+.turbo/
+.next/
+out/
+dist/
+coverage/
+*.tsbuildinfo
+.DS_Store
+.env
+.env*.local
+*.pem
+# Expo
+.expo/
+web-build/
+expo-env.d.ts
+.metro-health-check*
+.kotlin/
+*.jks
+*.p8
+*.p12
+*.key
+*.mobileprovision
+apps/mobile/ios/
+apps/mobile/android/
+# test output
+playwright-report/
+test-results/
+
+# Playwright outputs (apps/web)
+e2e-results/
+e2e-report/
+playwright/.cache/

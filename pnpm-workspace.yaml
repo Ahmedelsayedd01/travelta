@@ -1,0 +1,8 @@
+packages:
+  - "apps/*"
+  - "packages/*"
+allowBuilds:
+  '@parcel/watcher': false
+  '@swc/core': false
+minimumReleaseAgeExclude:
+  - i18next@27.1.2

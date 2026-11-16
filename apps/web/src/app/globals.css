@@ -1,0 +1,148 @@
+@import 'tailwindcss';
+@import '@travelta/design-tokens/tokens.css';
+@import '@travelta/design-tokens/theme.css';
+
+/* Dark variant follows the resolved theme: explicit data-theme wins, otherwise the OS preference. */
+@custom-variant dark {
+  &:where([data-theme='dark'], [data-theme='dark'] *) {
+    @slot;
+  }
+  @media (prefers-color-scheme: dark) {
+    &:where(:root:not([data-theme='light']), :root:not([data-theme='light']) *) {
+      @slot;
+    }
+  }
+}
+
+@theme inline {
+  --font-sans: var(--font-inter), var(--font-arabic), ui-sans-serif, system-ui, sans-serif;
+}
+
+@layer base {
+  html {
+    background: var(--tv-canvas);
+  }
+  body {
+    background: var(--tv-canvas);
+    color: var(--tv-fg);
+    font-feature-settings: 'cv11';
+  }
+  :lang(ar) body {
+    font-family: var(--font-arabic), var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+    line-height: 1.6;
+  }
+  :focus-visible {
+    outline: 2px solid var(--tv-focus);
+    outline-offset: 2px;
+  }
+  .tabular {
+    font-variant-numeric: tabular-nums;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      transition-duration: 0.01ms !important;
+    }
+  }
+}
+
+/* Mirror direction-sensitive icons (chevrons, arrows) in RTL. */
+@utility flip-rtl {
+  &:where(:dir(rtl), [dir='rtl'], [dir='rtl'] *) {
+    scale: -1 1;
+  }
+}
+
+/* ---- Interactive maps (components/map) ------------------------------------------------------------------------ */
+.tv-map {
+  min-height: 16rem;
+  background: var(--tv-subtle);
+  font: inherit;
+}
+.tv-map .leaflet-control-attribution {
+  font-size: 10px;
+}
+.tv-map-marker {
+  background: none;
+  border: 0;
+}
+.tv-map-price {
+  display: inline-block;
+  transform: translate(-50%, -100%);
+  white-space: nowrap;
+  border-radius: 999px;
+  border: 1px solid var(--tv-border-strong);
+  background: var(--tv-surface);
+  color: var(--tv-fg);
+  padding: 3px 9px;
+  font-size: 12px;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  box-shadow: var(--tv-shadow-md);
+  cursor: pointer;
+  transition: transform 120ms ease, background-color 120ms ease;
+}
+.tv-map-marker.is-hovered .tv-map-price {
+  background: var(--tv-primary-soft);
+  color: var(--tv-on-primary-soft);
+  transform: translate(-50%, -100%) scale(1.08);
+}
+.tv-map-marker.is-selected .tv-map-price {
+  background: var(--tv-primary);
+  border-color: var(--tv-primary);
+  color: var(--tv-on-primary);
+  transform: translate(-50%, -100%) scale(1.12);
+}
+.tv-map-marker:focus-visible {
+  outline: none;
+}
+.tv-map-marker:focus-visible .tv-map-price {
+  outline: 2px solid var(--tv-focus);
+  outline-offset: 2px;
+}
+.tv-map-place {
+  display: grid;
+  place-items: center;
+  width: 24px;
+  height: 24px;
+  border-radius: 999px;
+  background: var(--tv-secondary);
+  color: var(--tv-on-secondary);
+  font-size: 12px;
+  box-shadow: var(--tv-shadow-sm);
+}
+.tv-map-place--airport { background: var(--tv-info); color: #fff; }
+.tv-map-place--transit { background: var(--tv-accent); color: var(--tv-on-accent); }
+.tv-map-place--neighborhood { background: var(--tv-surface); color: var(--tv-fg); border: 1px dashed var(--tv-border-strong); }
+.tv-map-pin {
+  display: block;
+  width: 28px;
+  height: 28px;
+  border-radius: 50% 50% 50% 0;
+  transform: rotate(-45deg);
+  background: var(--tv-highlight);
+  border: 3px solid var(--tv-surface);
+  box-shadow: var(--tv-shadow-md);
+}
+.leaflet-tooltip.tv-map-tooltip {
+  border-radius: 8px;
+  border: 1px solid var(--tv-border);
+  background: var(--tv-surface-raised);
+  color: var(--tv-fg);
+  box-shadow: var(--tv-shadow-md);
+  padding: 6px 10px;
+  font-size: 12px;
+}
+[data-theme='dark'] .tv-map .leaflet-tile-pane {
+  filter: brightness(0.75) contrast(1.1) saturate(0.8);
+}
+.tv-map .leaflet-control-zoom a,
+.tv-map .leaflet-control-attribution {
+  background: var(--tv-surface);
+  color: var(--tv-fg);
+}
+.tv-map .leaflet-control-attribution a {
+  color: var(--tv-primary);
+}

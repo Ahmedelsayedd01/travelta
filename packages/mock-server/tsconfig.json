@@ -1,0 +1,6 @@
+{
+  "extends": "@travelta/tsconfig/library.json",
+  // Node types are for the contract tests that read the repository; runtime code stays browser-safe.
+  "compilerOptions": { "types": ["node"] },
+  "include": ["src"]
+}

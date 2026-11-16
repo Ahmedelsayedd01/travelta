@@ -1,0 +1,25 @@
+{
+  "name": "@travelta/design-tokens",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts",
+    "./tokens.css": "./tokens.css",
+    "./theme.css": "./theme.css"
+  },
+  "scripts": {
+    "generate": "UPDATE_TOKENS=1 vitest run src/css.test.ts",
+    "typecheck": "tsc --noEmit -p tsconfig.json",
+    "lint": "eslint .",
+    "test": "vitest run"
+  },
+  "devDependencies": {
+    "@travelta/eslint-config": "workspace:*",
+    "@travelta/tsconfig": "workspace:*",
+    "@types/node": "24.19.2",
+    "eslint": "9.39.5",
+    "typescript": "6.0.3",
+    "vitest": "5.1.0"
+  }
+}
