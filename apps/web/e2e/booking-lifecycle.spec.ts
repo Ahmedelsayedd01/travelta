@@ -1,5 +1,5 @@
 import type { Page } from '@playwright/test';
-import { expect, searchUrl, signIn, test, ACCOUNTS } from './fixtures';
+import { chooseOption, expect, searchUrl, signIn, test, ACCOUNTS } from './fixtures';
 
 /** Staff see source badges and pick the network (extranet) offer; customers just take the first result. */
 async function addHotelToCart(page: Page, path: string, network: boolean) {
@@ -57,7 +57,7 @@ test('agency booking through supplier confirmation, voucher, cancellation, refun
   // Vouchers need the booking paid (or an agreed plan): collect the balance first.
   await page.getByTestId('collect-payment').click();
   const collect = page.getByTestId('collect-dialog');
-  await collect.locator('select[name=account0]').selectOption({ index: 1 });
+  await chooseOption(page, collect.getByTestId('select-account0'), { index: 1 });
   await page.getByTestId('collect-submit').click();
   await expect(collect).toBeHidden();
   await page.locator('[data-action=voucher]').first().click();

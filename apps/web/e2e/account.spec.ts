@@ -117,6 +117,7 @@ test('travelers: add with validation, edit, use at checkout, remove', async ({ p
   await page.getByTestId('add-to-cart').click();
   await expect(page.getByTestId('cart-count')).toHaveText('1');
   await page.goto('/en/account/checkout');
+  await expect(page.getByText('All prices and availability confirmed')).toBeVisible(); // as in booking-lifecycle.spec
   await page.getByTestId('checkout-next').click();
   await page.locator('[data-testid="select-t0saved"]').click();
   await page.getByRole('option', { name: 'Omer Ali' }).click();

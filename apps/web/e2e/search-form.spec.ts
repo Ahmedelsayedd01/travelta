@@ -63,7 +63,10 @@ test('flights: same departure and arrival airport is rejected; swap and fix work
   await expect(form.getByTestId('select-fromCode')).toHaveAttribute('data-value', 'IST');
   await expect(form.getByTestId('select-toCode')).toHaveAttribute('data-value', 'CAI');
   await form.getByTestId('search-submit').click();
-  await expect(page.getByTestId('search-result').first().getByTestId('category-facts')).toContainText('IST');
+  // The swapped route reaches the search. (IST → CAI flies Mon/Wed/Fri only, so whether offers exist depends on the
+  // default date's weekday; the criteria in the URL do not.)
+  await expect.poll(() => JSON.parse(new URL(page.url()).searchParams.get('s') ?? '{}')).toMatchObject({ serviceType: 'flight', fromCode: 'IST', toCode: 'CAI' });
+  await expect(page.getByTestId('search-result').first().or(page.getByText('No offers match'))).toBeVisible();
 });
 
 test('date picker: past dates disabled, check-out follows check-in, keyboard works', async ({ page }) => {

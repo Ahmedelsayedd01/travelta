@@ -4,6 +4,7 @@ import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { useLocale, useTranslations } from 'next-intl';
 import { useEffect, useRef, useState, type KeyboardEvent } from 'react';
 import { cn } from '@/lib/cn';
+import { SelectField } from './select';
 
 /** ISO date helpers in UTC (dates are calendar days, never times). */
 const toDate = (iso: string) => new Date(`${iso}T00:00:00Z`);
@@ -11,16 +12,23 @@ const toIso = (d: Date) => d.toISOString().slice(0, 10);
 const addDaysIso = (iso: string, n: number) => { const d = toDate(iso); d.setUTCDate(d.getUTCDate() + n); return toIso(d); };
 const addMonthsIso = (iso: string, n: number) => { const d = toDate(iso); const day = d.getUTCDate(); d.setUTCDate(1); d.setUTCMonth(d.getUTCMonth() + n); const last = new Date(Date.UTC(d.getUTCFullYear(), d.getUTCMonth() + 1, 0)).getUTCDate(); d.setUTCDate(Math.min(day, last)); return toIso(d); };
 const monthStart = (iso: string) => `${iso.slice(0, 7)}-01`;
+/** Same day-of-month in year `y`, month `m` (0-based), clamped to the month's length. */
+const clampDay = (y: number, m: number, iso: string) => {
+  const last = new Date(Date.UTC(y, m + 1, 0)).getUTCDate();
+  return toIso(new Date(Date.UTC(y, m, Math.min(Number(iso.slice(8, 10)), last))));
+};
 
 /**
  * Accessible month calendar (WAI-ARIA date grid): arrow keys move by day/week (mirrored in RTL), PageUp/PageDown by
  * month, Home/End to the week edges; days outside [min, max] or rejected by `isDisabled` can't be chosen.
  * Week starts on Saturday in Arabic and Sunday in English.
  */
-export function Calendar({ value, onSelect, min, max, isDisabled, label, rangeStart, autoFocus = true }: {
+export function Calendar({ value, onSelect, min, max, isDisabled, label, rangeStart, autoFocus = true, yearNav = false }: {
   value?: string; onSelect: (iso: string) => void; min?: string; max?: string; isDisabled?: (iso: string) => boolean; label: string;
   /** Highlights the span between rangeStart and the hovered/selected day (e.g. check-in → check-out). */
   rangeStart?: string; autoFocus?: boolean;
+  /** Month and year dropdowns in the header, for dates far from today (birth, passport expiry, reports). */
+  yearNav?: boolean;
 }) {
   const locale = useLocale();
   const t = useTranslations('common');
@@ -74,7 +82,25 @@ export function Calendar({ value, onSelect, min, max, isDisabled, label, rangeSt
           className="flex size-8 items-center justify-center rounded-md text-fg hover:bg-subtle disabled:opacity-30" data-testid="calendar-prev">
           <ChevronLeft className="flip-rtl size-4" aria-hidden />
         </button>
-        <p className="text-sm font-semibold text-fg" aria-live="polite" data-testid="calendar-month">{fmtMonth.format(first)}</p>
+        <p className={cn('text-sm font-semibold text-fg', yearNav && 'sr-only')} aria-live="polite" data-testid="calendar-month">{fmtMonth.format(first)}</p>
+        {yearNav && (() => {
+          const thisYear = new Date().getUTCFullYear();
+          const fromYear = min ? Number(min.slice(0, 4)) : thisYear - 100;
+          const toYear = max ? Number(max.slice(0, 4)) : thisYear + 15;
+          const year = first.getUTCFullYear();
+          const fmtM = new Intl.DateTimeFormat(locale, { month: 'short', timeZone: 'UTC' });
+          const fmtY = new Intl.NumberFormat(locale, { useGrouping: false });
+          const jump = (y: number, m: number) => setFocus(clampDay(y, m, focus));
+          return (
+            <div className="flex flex-1 items-center justify-center gap-1.5">
+              <SelectField value={String(first.getUTCMonth())} aria-label={t('month')} testId="calendar-month-select" className="h-8 w-[5.5rem]"
+                onValueChange={(v) => jump(year, Number(v))} options={Array.from({ length: 12 }, (_, m) => ({ value: String(m), label: fmtM.format(new Date(Date.UTC(2024, m, 1))) }))} />
+              <SelectField value={String(year)} aria-label={t('year')} testId="calendar-year-select" className="h-8 w-[5.5rem]"
+                onValueChange={(v) => jump(Number(v), first.getUTCMonth())}
+                options={Array.from({ length: Math.max(1, toYear - fromYear + 1) }, (_, i) => toYear - i).map((y) => ({ value: String(y), label: fmtY.format(y) }))} />
+            </div>
+          );
+        })()}
         <button type="button" onClick={() => setFocus(addMonthsIso(focus, 1))} disabled={!canNext} aria-label={t('nextMonth')}
           className="flex size-8 items-center justify-center rounded-md text-fg hover:bg-subtle disabled:opacity-30" data-testid="calendar-next">
           <ChevronRight className="flip-rtl size-4" aria-hidden />

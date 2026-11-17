@@ -1,5 +1,5 @@
 import AxeBuilder from '@axe-core/playwright';
-import { test as base, expect, type Page } from '@playwright/test';
+import { test as base, expect, type Locator, type Page } from '@playwright/test';
 
 /** Seeded demo accounts (see README → Demo accounts). One password for all of them. */
 export const DEMO_PASSWORD = 'Demo@1234';
@@ -53,9 +53,12 @@ export async function signOut(page: Page) {
     await expect(page.getByRole('button', { name: 'Sign out' })).toHaveCount(0);
   } else if (await page.evaluate(() => { try { return !!localStorage.getItem('travelta:session'); } catch { return false; } }) && await profile.isVisible().catch(() => false)) {
     // Storefront customers sign out from the profile menu.
+    const signedIn = !/Sign in|تسجيل الدخول/.test(await profile.innerText());
     await profile.click();
     const out = page.getByTestId('menu-sign-out');
-    if (await out.isVisible().catch(() => false)) {
+    if (signedIn) {
+      // The menu animates open; wait for the item rather than sampling it once (slow under a parallel run).
+      await expect(out).toBeVisible();
       await out.click();
       await expect(page.getByTestId('menu-sign-out')).toHaveCount(0);
       await expect(page.getByTestId('profile-menu-trigger')).toContainText(/Sign in|تسجيل الدخول/);
@@ -94,6 +97,16 @@ export async function pickOption(page: Page, name: string, value: string, scope 
   await trigger.click();
   await page.locator(`[role=option][data-value="${value}"]`).click();
   await expect(trigger).toHaveAttribute('data-value', value);
+}
+
+/** Open a design-system select (trigger locator) and choose an option by its visible label or position. */
+export async function chooseOption(page: Page, trigger: Locator, option: { label: string } | { index: number }) {
+  await trigger.click();
+  const options = page.locator('[role=listbox] [role=option]');
+  const target = 'label' in option ? options.filter({ hasText: option.label }).first() : options.nth(option.index);
+  const value = await target.getAttribute('data-value');
+  await target.click();
+  await expect(trigger).toHaveAttribute('data-value', value ?? '');
 }
 
 /** Pick a destination by code in a search form. */

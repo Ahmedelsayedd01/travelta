@@ -12,6 +12,7 @@ import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Field } from '@/components/ui/field';
+import { DateInput } from '@/components/ui/date-picker';
 import { Input, Select, Textarea } from '@/components/ui/input';
 import { Sheet } from '@/components/ui/sheet';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -336,8 +337,8 @@ export function ProductEditor({ productId, onClose }: { productId: string | null
           {draft.seasons.map((s, k) => (
             <div key={k} className="grid grid-cols-2 items-end gap-2 sm:grid-cols-[2fr_1fr_1fr_1fr_auto]">
               <Field label={t('catalog.seasonName')}><Input value={s.name} onChange={(e) => set({ seasons: draft.seasons.map((x, j) => (j === k ? { ...x, name: e.target.value } : x)) })} /></Field>
-              <Field label={t('catalog.from')}><Input type="date" value={s.from} onChange={(e) => set({ seasons: draft.seasons.map((x, j) => (j === k ? { ...x, from: e.target.value } : x)) })} /></Field>
-              <Field label={t('catalog.to')}><Input type="date" value={s.to} onChange={(e) => set({ seasons: draft.seasons.map((x, j) => (j === k ? { ...x, to: e.target.value } : x)) })} /></Field>
+              <Field label={t('catalog.from')}><DateInput value={s.from} onChange={(e) => set({ seasons: draft.seasons.map((x, j) => (j === k ? { ...x, from: e.target.value } : x)) })} /></Field>
+              <Field label={t('catalog.to')}><DateInput value={s.to} onChange={(e) => set({ seasons: draft.seasons.map((x, j) => (j === k ? { ...x, to: e.target.value } : x)) })} /></Field>
               <Field label={t('catalog.uplift')}><Input type="number" value={s.upliftPct} onChange={(e) => set({ seasons: draft.seasons.map((x, j) => (j === k ? { ...x, upliftPct: Number(e.target.value) } : x)) })} /></Field>
               <Button variant="ghost" size="icon" aria-label={t('catalog.removeUnit')} onClick={() => set({ seasons: draft.seasons.filter((_, j) => j !== k) })}><Trash2 aria-hidden /></Button>
             </div>

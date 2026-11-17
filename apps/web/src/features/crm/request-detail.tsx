@@ -15,6 +15,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardBody, CardHeader } from '@/components/ui/card';
 import { Dialog } from '@/components/ui/dialog';
 import { Field } from '@/components/ui/field';
+import { DateInput } from '@/components/ui/date-picker';
 import { Input, Select } from '@/components/ui/input';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useDateFormat } from '@/features/bookings/bookings-page';
@@ -82,8 +83,8 @@ function QuotationDialog({ detail, base, onClose }: { detail: RequestDetail; bas
               </Select>
             </Field>
             <Field label={t('title')} className="sm:col-span-4"><Input name={`title${i}`} value={l.title} onChange={(e) => set(i, { title: e.target.value })} /></Field>
-            <Field label={t('from')}><Input type="date" name={`from${i}`} value={l.from} onChange={(e) => set(i, { from: e.target.value })} /></Field>
-            {RANGE.includes(l.serviceType) ? <Field label={t('to')}><Input type="date" name={`to${i}`} value={l.to} onChange={(e) => set(i, { to: e.target.value })} /></Field> : <span className="hidden sm:block" />}
+            <Field label={t('from')}><DateInput name={`from${i}`} value={l.from} onChange={(e) => set(i, { from: e.target.value })} /></Field>
+            {RANGE.includes(l.serviceType) ? <Field label={t('to')}><DateInput name={`to${i}`} value={l.to} onChange={(e) => set(i, { to: e.target.value })} /></Field> : <span className="hidden sm:block" />}
             <Field label={t('adults')}><Input type="number" min={1} name={`ad${i}`} value={l.adults} onChange={(e) => set(i, { adults: e.target.value })} /></Field>
             <Field label={t('children')}><Input type="number" min={0} name={`ch${i}`} value={l.children} onChange={(e) => set(i, { children: e.target.value })} /></Field>
             <Field label={t('cost')} className="sm:col-span-2"><Input type="number" min={0} step="0.01" name={`cost${i}`} value={l.cost} onChange={(e) => set(i, { cost: e.target.value })} /></Field>
@@ -96,7 +97,7 @@ function QuotationDialog({ detail, base, onClose }: { detail: RequestDetail; bas
         ))}
         <div className="flex flex-wrap items-end gap-3">
           <Button variant="outline" size="sm" disabled={lines.length >= 10} onClick={() => setLines([...lines, blank()])} data-testid="add-quote-line"><Plus aria-hidden />{t('addLine')}</Button>
-          <Field label={t('validUntil')} className="ms-auto" error={errors.validUntil}><Input type="date" name="validUntil" value={validUntil} onChange={(e) => setValidUntil(e.target.value)} /></Field>
+          <Field label={t('validUntil')} className="ms-auto" error={errors.validUntil}><DateInput name="validUntil" value={validUntil} onChange={(e) => setValidUntil(e.target.value)} /></Field>
         </div>
         <Field label={t('notes')} optional><Input name="quoteNotes" value={notes} onChange={(e) => setNotes(e.target.value)} /></Field>
       </div>

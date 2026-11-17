@@ -58,7 +58,11 @@
     "notFoundTitle": "غير موجود",
     "notFoundBody": "هذا السجل غير موجود أو ليست لديك صلاحية الوصول إليه.",
     "prevMonth": "الشهر السابق",
-    "nextMonth": "الشهر التالي"
+    "nextMonth": "الشهر التالي",
+    "clearDate": "مسح التاريخ",
+    "month": "الشهر",
+    "year": "السنة",
+    "chooseDate": "اختر تاريخًا"
   },
   "validation": {
     "required": "هذا الحقل مطلوب",

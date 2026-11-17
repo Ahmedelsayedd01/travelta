@@ -36,12 +36,13 @@ export function OrganizationProfileForm({ target, onSaved }: { target?: Organiza
   useEffect(() => {
     if (profile.data) {
       const { name, legalName, city, contactEmail, contactPhone, baseCurrency } = profile.data;
-      form.reset({ name, legalName, city, contactEmail, contactPhone, baseCurrency });
+      // Background refetches (sync after any write) must not discard what the user is editing: keep dirty fields.
+      form.reset({ name, legalName, city, contactEmail, contactPhone, baseCurrency }, { keepDirtyValues: true });
     }
   }, [profile.data, form]);
   const save = useAction((input: OrganizationProfileInput) => (target ? api.call('orgs.update', { ...input, id: target.id }) : api.call('orgs.updateMyProfile', input)),
     { success: t('saved'), invalidate: [['orgs']], onSuccess: () => onSaved?.() });
-  const submit = form.handleSubmit((v) => save.mutate(v, { onError: (e) => applyFieldErrors(e, form.setError) }));
+  const submit = form.handleSubmit((v) => save.mutate(v, { onSuccess: () => form.reset(v), onError: (e) => applyFieldErrors(e, form.setError) }));
   const e = form.formState.errors;
 
   if (!profile.data) return <Skeleton className="h-64 w-full" />;

@@ -27,7 +27,7 @@ export function Field({ label, error, help, required, optional, className, child
 
   return (
     <div className={cn('flex flex-col gap-1.5', className)}>
-      <label htmlFor={id} className="text-sm font-medium text-fg">
+      <label htmlFor={id} id={`${id}-label`} className="text-sm font-medium text-fg">
         {label}
         {required && <span className="ms-0.5 text-danger" aria-hidden>*</span>}
         {optional && <span className="ms-1 text-xs font-normal text-fg-muted">({t('common.optional')})</span>}

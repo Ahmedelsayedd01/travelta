@@ -10,7 +10,7 @@ import { EmptyState, ErrorState } from '@/components/feedback/states';
 import { Button } from '@/components/ui/button';
 import { Card, CardBody } from '@/components/ui/card';
 import { Field } from '@/components/ui/field';
-import { Input } from '@/components/ui/input';
+import { DateInput } from '@/components/ui/date-picker';
 import { PageHeader } from '@/components/ui/page-header';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useDemoToday } from '@/features/demo/hooks';
@@ -69,8 +69,8 @@ export function ReportsPage() {
         <div className="flex min-w-0 flex-col gap-4">
           {run.data?.from !== null && (
             <div className="flex flex-wrap items-end gap-3">
-              <Field label={t('from')}><Input type="date" name="from" value={from} max={to} onChange={(e) => setFrom(e.target.value)} /></Field>
-              <Field label={t('to')}><Input type="date" name="to" value={to} min={from} onChange={(e) => setTo(e.target.value)} /></Field>
+              <Field label={t('from')}><DateInput name="from" value={from} max={to} onChange={(e) => setFrom(e.target.value)} /></Field>
+              <Field label={t('to')}><DateInput name="to" value={to} min={from} onChange={(e) => setTo(e.target.value)} /></Field>
             </div>
           )}
           {run.isError ? <ErrorState onRetry={() => void run.refetch()} /> : !run.data ? <Skeleton className="h-96 w-full" /> : run.data.rows.length === 0 ? (

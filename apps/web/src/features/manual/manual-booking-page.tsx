@@ -13,6 +13,7 @@ import { PriceBreakdownView } from '@/components/data/price-breakdown';
 import { Button } from '@/components/ui/button';
 import { Card, CardBody, CardHeader } from '@/components/ui/card';
 import { Field } from '@/components/ui/field';
+import { DateInput } from '@/components/ui/date-picker';
 import { Input, Select } from '@/components/ui/input';
 import { PageHeader } from '@/components/ui/page-header';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -177,8 +178,8 @@ export function ManualBookingPage() {
                     {(['individual', 'corporate', 'vip'] as const).map((c) => <option key={c} value={c}>{tg(`enums.customerType.${c}`)}</option>)}
                   </Select>
                 </Field>
-                <Field label={t('startDate')} required><Input type="date" name="from" min={today} value={d.from} onChange={(e) => set({ from: e.target.value, to: e.target.value > d.to ? e.target.value : d.to })} /></Field>
-                {range && <Field label={t('endDate')} required error={d.to < d.from ? 'validation.invalid_date' : undefined}><Input type="date" name="to" min={d.from} value={d.to} onChange={(e) => set({ to: e.target.value })} /></Field>}
+                <Field label={t('startDate')} required><DateInput name="from" min={today} value={d.from} onChange={(e) => set({ from: e.target.value, to: e.target.value > d.to ? e.target.value : d.to })} /></Field>
+                {range && <Field label={t('endDate')} required error={d.to < d.from ? 'validation.invalid_date' : undefined}><DateInput name="to" min={d.from} value={d.to} onChange={(e) => set({ to: e.target.value })} /></Field>}
                 <div className="grid grid-cols-3 gap-3 sm:col-span-2">
                   <Field label={tg('search.adults')}><Input type="number" min={1} max={30} name="adults" value={d.adults} onChange={(e) => set({ adults: Math.max(1, Number(e.target.value) || 1) })} /></Field>
                   <Field label={tg('search.children')}><Input type="number" min={0} max={20} name="children" value={d.children} onChange={(e) => set({ children: Math.max(0, Number(e.target.value) || 0) })} /></Field>

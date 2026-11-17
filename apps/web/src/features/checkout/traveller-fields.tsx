@@ -10,6 +10,7 @@ import { useApi } from '@/components/api-provider';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Field } from '@/components/ui/field';
+import { DateInput } from '@/components/ui/date-picker';
 import { Input, Select } from '@/components/ui/input';
 import { toStoredFile } from '@/lib/files';
 import { cn } from '@/lib/cn';
@@ -93,7 +94,7 @@ export function TravellerFields({ index, item, travellers, details, errors, onCh
             <Field label={t('lastName')} required error={err(`travellers.${j}.lastName`)}><Input name={`t${j}last`} value={tr.lastName} onChange={(e) => set(j, { lastName: e.target.value })} autoComplete="off" /></Field>
             {(tr.type !== 'adult' || passport) && (
               <Field label={t('dateOfBirth')} required={tr.type !== 'adult'} error={err(`travellers.${j}.dateOfBirth`)}>
-                <Input type="date" name={`t${j}dob`} value={tr.dateOfBirth ?? ''} onChange={(e) => set(j, { dateOfBirth: e.target.value || null })} />
+                <DateInput name={`t${j}dob`} value={tr.dateOfBirth ?? ''} onChange={(e) => set(j, { dateOfBirth: e.target.value || null })} />
               </Field>
             )}
             {passport && (
@@ -105,7 +106,7 @@ export function TravellerFields({ index, item, travellers, details, errors, onCh
                   </Select>
                 </Field>
                 <Field label={t('passportNo')} required error={err(`travellers.${j}.passportNo`)}><Input name={`t${j}passport`} value={tr.passportNo ?? ''} onChange={(e) => set(j, { passportNo: e.target.value.toUpperCase() || null })} dir="ltr" /></Field>
-                <Field label={t('passportExpiry')} required error={err(`travellers.${j}.passportExpiry`)}><Input type="date" name={`t${j}pexp`} value={tr.passportExpiry ?? ''} onChange={(e) => set(j, { passportExpiry: e.target.value || null })} /></Field>
+                <Field label={t('passportExpiry')} required error={err(`travellers.${j}.passportExpiry`)}><DateInput name={`t${j}pexp`} value={tr.passportExpiry ?? ''} onChange={(e) => set(j, { passportExpiry: e.target.value || null })} /></Field>
               </>
             )}
             {item.serviceType === 'umrah' && tr.type === 'adult' && ['mrs', 'ms', 'miss'].includes(tr.title) && (
@@ -151,7 +152,7 @@ function ServiceDetails({ index, item, details, onDetails, errors }: Pick<Props,
         <Field label={t('pickupPoint')} optional><Input value={details.pickupPoint ?? ''} onChange={(e) => set({ pickupPoint: e.target.value || undefined })} /></Field>
       )}
       {s === 'transfer' && <Field label={t('flightNo')} optional><Input dir="ltr" value={details.flightNo ?? ''} onChange={(e) => set({ flightNo: e.target.value.toUpperCase() || undefined })} /></Field>}
-      {s === 'visa' && <Field label={t('appointmentDate')} optional><Input type="date" value={details.appointmentDate ?? ''} onChange={(e) => set({ appointmentDate: e.target.value || undefined })} /></Field>}
+      {s === 'visa' && <Field label={t('appointmentDate')} optional><DateInput value={details.appointmentDate ?? ''} onChange={(e) => set({ appointmentDate: e.target.value || undefined })} /></Field>}
       {s === 'umrah' && (
         <Field label={t('occupancy')} optional>
           <Select value={details.occupancy ?? ''} onChange={(e) => set({ occupancy: (e.target.value || undefined) as ItemDetails['occupancy'] })}>

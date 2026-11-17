@@ -15,6 +15,7 @@ import { Card, CardBody, CardHeader, StatCard } from '@/components/ui/card';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Dialog } from '@/components/ui/dialog';
 import { Field } from '@/components/ui/field';
+import { DateInput } from '@/components/ui/date-picker';
 import { Input, Select } from '@/components/ui/input';
 import { PageHeader } from '@/components/ui/page-header';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -53,8 +54,8 @@ function Overview() {
   return (
     <div className="flex flex-col gap-6">
       <div className="flex flex-wrap items-end gap-3">
-        <Field label={t('from')}><Input type="date" name="from" value={from} onChange={(e) => setFrom(e.target.value)} /></Field>
-        <Field label={t('to')}><Input type="date" name="to" value={to} onChange={(e) => setTo(e.target.value)} /></Field>
+        <Field label={t('from')}><DateInput name="from" value={from} onChange={(e) => setFrom(e.target.value)} /></Field>
+        <Field label={t('to')}><DateInput name="to" value={to} onChange={(e) => setTo(e.target.value)} /></Field>
         {(from || to) && <Button variant="ghost" onClick={() => { setFrom(''); setTo(''); }}>{t('allTime')}</Button>}
       </div>
       <div className="grid gap-4 sm:grid-cols-3" data-testid="pnl">
@@ -164,7 +165,7 @@ function ManualEntryDialog({ onClose }: { onClose: () => void }) {
       footer={<><Button variant="outline" onClick={onClose}>{t('cancel')}</Button><Button onClick={() => post.mutate(undefined, { onError: (e) => setErrors(e instanceof ApiClientError ? e.fieldErrors() : {}) })} loading={post.isPending} disabled={dr === 0 || dr !== cr || memo.trim().length < 3} data-testid="manual-submit">{t('post')}</Button></>}>
       <div className="flex flex-col gap-3" data-testid="manual-form">
         <div className="grid gap-3 sm:grid-cols-[10rem_1fr]">
-          <Field label={t('date')}><Input type="date" name="date" value={date} onChange={(e) => setDate(e.target.value)} /></Field>
+          <Field label={t('date')}><DateInput name="date" value={date} onChange={(e) => setDate(e.target.value)} /></Field>
           <Field label={t('memo')} required error={errors.memo}><Input name="memo" value={memo} onChange={(e) => setMemo(e.target.value)} /></Field>
         </div>
         {lines.map((l, i) => (
@@ -315,7 +316,7 @@ function ExpenseDialog({ onClose }: { onClose: () => void }) {
       footer={<><Button variant="outline" onClick={onClose}>{t('cancel')}</Button><Button onClick={() => save.mutate(undefined, { onError: (e) => setErrors(e instanceof ApiClientError ? e.fieldErrors() : {}) })} loading={save.isPending} data-testid="expense-save">{t('save')}</Button></>}>
       <div className="grid gap-3 sm:grid-cols-2" data-testid="expense-form">
         <Field label={t('category')}><Select name="category" value={v.category} onChange={(e) => setV({ ...v, category: e.target.value as typeof v.category })}>{(['general', 'rent', 'salaries', 'marketing'] as const).map((c) => <option key={c} value={c}>{t(`exp_${c}`)}</option>)}</Select></Field>
-        <Field label={t('date')} error={errors.date}><Input type="date" name="date" value={v.date} onChange={(e) => setV({ ...v, date: e.target.value })} /></Field>
+        <Field label={t('date')} error={errors.date}><DateInput name="date" value={v.date} onChange={(e) => setV({ ...v, date: e.target.value })} /></Field>
         <Field label={t('description')} required className="sm:col-span-2" error={errors.description}><Input name="description" value={v.description} onChange={(e) => setV({ ...v, description: e.target.value })} /></Field>
         <Field label={t('amount')} required error={errors.amountMinor}><Input type="number" min={0} step="0.01" name="amount" value={v.amount} onChange={(e) => setV({ ...v, amount: e.target.value })} /></Field>
         <Field label={t('paidFrom')} required error={errors.financialAccountId}><Select name="account" value={v.financialAccountId} onChange={(e) => setV({ ...v, financialAccountId: e.target.value })}><option value="">{t('chooseAccount')}</option>{(fin.data ?? []).filter((a) => a.active).map((a) => <option key={a.id} value={a.id}>{a.name}</option>)}</Select></Field>
@@ -365,7 +366,7 @@ function TransferDialog({ onClose }: { onClose: () => void }) {
         <Field label={t('fromAccount')} required error={errors.fromAccountId}><Select name="from" value={v.fromAccountId} onChange={(e) => setV({ ...v, fromAccountId: e.target.value })}><option value="">{t('chooseAccount')}</option>{options.map((a) => <option key={a.id} value={a.id}>{a.name}</option>)}</Select></Field>
         <Field label={t('toAccount')} required error={errors.toAccountId}><Select name="to" value={v.toAccountId} onChange={(e) => setV({ ...v, toAccountId: e.target.value })}><option value="">{t('chooseAccount')}</option>{options.map((a) => <option key={a.id} value={a.id}>{a.name}</option>)}</Select></Field>
         <Field label={t('amount')} required error={errors.amountMinor}><Input type="number" min={0} step="0.01" name="amount" value={v.amount} onChange={(e) => setV({ ...v, amount: e.target.value })} /></Field>
-        <Field label={t('date')}><Input type="date" name="date" value={v.date} onChange={(e) => setV({ ...v, date: e.target.value })} /></Field>
+        <Field label={t('date')}><DateInput name="date" value={v.date} onChange={(e) => setV({ ...v, date: e.target.value })} /></Field>
         <Field label={t('note')} optional className="sm:col-span-2"><Input name="note" value={v.note} onChange={(e) => setV({ ...v, note: e.target.value })} /></Field>
       </div>
     </Dialog>

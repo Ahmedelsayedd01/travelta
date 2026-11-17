@@ -18,6 +18,7 @@ import { Card, CardBody, CardHeader } from '@/components/ui/card';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Dialog } from '@/components/ui/dialog';
 import { Field } from '@/components/ui/field';
+import { DateInput } from '@/components/ui/date-picker';
 import { Input, Select } from '@/components/ui/input';
 import { PageHeader } from '@/components/ui/page-header';
 import { Tab, Tabs, TabsList, TabsPanel } from '@/components/ui/tabs';
@@ -163,8 +164,8 @@ function PromosTab() {
           <div className="grid gap-4 sm:grid-cols-2">
             <Field label={t('pricing.code')} required><Input dir="ltr" value={editing.code} onChange={(e) => setEditing({ ...editing, code: e.target.value.toUpperCase() })} /></Field>
             <Field label={t('pricing.value')}><Input type="number" min={0} value={editing.value} onChange={(e) => setEditing({ ...editing, value: Number(e.target.value) })} /></Field>
-            <Field label={t('pricing.validFrom')}><Input type="date" value={editing.validFrom} onChange={(e) => setEditing({ ...editing, validFrom: e.target.value })} /></Field>
-            <Field label={t('pricing.validTo')}><Input type="date" value={editing.validTo} onChange={(e) => setEditing({ ...editing, validTo: e.target.value })} /></Field>
+            <Field label={t('pricing.validFrom')}><DateInput value={editing.validFrom} onChange={(e) => setEditing({ ...editing, validFrom: e.target.value })} /></Field>
+            <Field label={t('pricing.validTo')}><DateInput value={editing.validTo} onChange={(e) => setEditing({ ...editing, validTo: e.target.value })} /></Field>
             <Field label={t('pricing.maxUses')} optional><Input type="number" min={1} value={editing.maxUses ?? ''} placeholder={t('pricing.unlimited')} onChange={(e) => setEditing({ ...editing, maxUses: e.target.value ? Number(e.target.value) : null })} /></Field>
             <Field label={t('pricing.mode')}><Select value={editing.mode} onChange={(e) => setEditing({ ...editing, mode: e.target.value as 'percent' | 'fixed' })}><option value="percent">{t('enums.markupMode.percent')}</option><option value="fixed">{t('enums.markupMode.fixed')}</option></Select></Field>
           </div>

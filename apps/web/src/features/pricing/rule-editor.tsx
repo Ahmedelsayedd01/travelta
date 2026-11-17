@@ -10,6 +10,7 @@ import { useForm, type Resolver } from 'react-hook-form';
 import { useApi } from '@/components/api-provider';
 import { Button } from '@/components/ui/button';
 import { Field } from '@/components/ui/field';
+import { DateInput } from '@/components/ui/date-picker';
 import { Input, Select } from '@/components/ui/input';
 import { Sheet } from '@/components/ui/sheet';
 import { applyFieldErrors, useAction } from '@/lib/mutations';
@@ -121,8 +122,8 @@ export function RuleEditor({ rule, onClose }: { rule: MarkupRuleEntity | null; o
                 <option value="">{t('pricing.anyChannel')}</option><option value="b2b">B2B</option><option value="b2c">B2C</option>
               </Select>
             </Field>
-            <Field label={t('pricing.travelFrom')} optional><Input type="date" value={match.travelWindow?.from ?? ''} onChange={(ev) => setMatch({ travelWindow: { ...match.travelWindow, from: ev.target.value || undefined } })} /></Field>
-            <Field label={t('pricing.travelTo')} optional><Input type="date" value={match.travelWindow?.to ?? ''} onChange={(ev) => setMatch({ travelWindow: { ...match.travelWindow, to: ev.target.value || undefined } })} /></Field>
+            <Field label={t('pricing.travelFrom')} optional><DateInput value={match.travelWindow?.from ?? ''} onChange={(ev) => setMatch({ travelWindow: { ...match.travelWindow, from: ev.target.value || undefined } })} /></Field>
+            <Field label={t('pricing.travelTo')} optional><DateInput value={match.travelWindow?.to ?? ''} onChange={(ev) => setMatch({ travelWindow: { ...match.travelWindow, to: ev.target.value || undefined } })} /></Field>
           </div>
         </div>
 

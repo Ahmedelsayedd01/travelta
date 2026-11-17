@@ -6,6 +6,7 @@ import { CheckCircle2, CircleAlert, Plus, Trash2 } from 'lucide-react';
 import { useLocale, useTranslations } from 'next-intl';
 import { Button } from '@/components/ui/button';
 import { Field } from '@/components/ui/field';
+import { DateInput } from '@/components/ui/date-picker';
 import { Input } from '@/components/ui/input';
 import { priceOf } from '@/features/search/format';
 import { cn } from '@/lib/cn';
@@ -62,7 +63,7 @@ export function PaymentPlanEditor({ value, onChange, totalMinor, currency, today
                 <Input type="number" step="0.01" min={0} name={`inst${i}amount`} value={row.amount} onChange={(e) => onChange({ ...value, installments: value.installments.map((r, k) => (k === i ? { ...r, amount: e.target.value } : r)) })} />
               </Field>
               <Field label={t('dueDate')} error={rowIssue(i, 'dueDate')}>
-                <Input type="date" name={`inst${i}due`} min={today} max={serviceStart} value={row.dueDate} onChange={(e) => onChange({ ...value, installments: value.installments.map((r, k) => (k === i ? { ...r, dueDate: e.target.value } : r)) })} />
+                <DateInput name={`inst${i}due`} min={today} max={serviceStart} value={row.dueDate} onChange={(e) => onChange({ ...value, installments: value.installments.map((r, k) => (k === i ? { ...r, dueDate: e.target.value } : r)) })} />
               </Field>
               <Button variant="ghost" size="icon" aria-label={`${t('installments')} ${i + 1} ×`} disabled={value.installments.length <= 1}
                 onClick={() => onChange({ ...value, installments: value.installments.filter((_, k) => k !== i) })}><Trash2 aria-hidden /></Button>

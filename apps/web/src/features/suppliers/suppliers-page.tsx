@@ -17,6 +17,7 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Field } from '@/components/ui/field';
+import { DateInput } from '@/components/ui/date-picker';
 import { Input, Select, Textarea } from '@/components/ui/input';
 import { PageHeader } from '@/components/ui/page-header';
 import { Sheet } from '@/components/ui/sheet';
@@ -138,8 +139,8 @@ function ContractSheet({ supplier, onClose }: { supplier: SupplierDto; onClose: 
         <Field label={t('suppliers.contractStatus')}>
           <Select {...form.register('status')}>{(['draft', 'active', 'expired'] as const).map((s) => <option key={s} value={s}>{t(s === 'active' ? 'suppliers.active' : `suppliers.${s}`)}</option>)}</Select>
         </Field>
-        <Field label={t('suppliers.validFrom')} required error={e.validFrom?.message}><Input type="date" {...form.register('validFrom')} /></Field>
-        <Field label={t('suppliers.validTo')} required error={e.validTo?.message}><Input type="date" {...form.register('validTo')} /></Field>
+        <Field label={t('suppliers.validFrom')} required error={e.validFrom?.message}><DateInput {...form.register('validFrom')} /></Field>
+        <Field label={t('suppliers.validTo')} required error={e.validTo?.message}><DateInput {...form.register('validTo')} /></Field>
         <Field label={t('suppliers.commissionPct')} required error={e.commissionPct?.message}><Input type="number" step="0.5" min={0} max={50} {...form.register('commissionPct', { valueAsNumber: true })} /></Field>
         <Field label={t('suppliers.payoutDays')} required error={e.payoutDays?.message}><Input type="number" min={0} max={120} {...form.register('payoutDays', { valueAsNumber: true })} /></Field>
         <fieldset className="sm:col-span-2">

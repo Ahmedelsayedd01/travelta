@@ -58,7 +58,11 @@
     "notFoundTitle": "Not found",
     "notFoundBody": "This record doesn't exist or you don't have access to it.",
     "prevMonth": "Previous month",
-    "nextMonth": "Next month"
+    "nextMonth": "Next month",
+    "clearDate": "Clear date",
+    "month": "Month",
+    "year": "Year",
+    "chooseDate": "Choose a date"
   },
   "validation": {
     "required": "This field is required",

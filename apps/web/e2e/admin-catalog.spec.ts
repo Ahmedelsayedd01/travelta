@@ -1,4 +1,4 @@
-import { expect, searchUrl, signIn, test, ACCOUNTS } from './fixtures';
+import { chooseOption, expect, searchUrl, signIn, test, ACCOUNTS } from './fixtures';
 
 /** Scenario A — the platform admin manages a hotel end to end and public search follows its status. */
 test('platform admin creates, edits, deactivates, reactivates, archives and deletes a hotel', async ({ page }) => {
@@ -7,12 +7,12 @@ test('platform admin creates, edits, deactivates, reactivates, archives and dele
   await page.goto('/en/admin/catalog');
   await page.getByTestId('new-product').click();
   const editor = page.getByTestId('product-editor');
-  await editor.getByTestId('product-owner').selectOption({ label: 'Pharaoh Stays Group · Supplier' });
+  await chooseOption(page, editor.getByTestId('product-owner'), { label: 'Pharaoh Stays Group · Supplier' });
   await editor.locator('input[name=nameEn]').fill(name);
   await editor.locator('input[name=nameAr]').fill('كرنك ريفرسايد');
   await editor.locator('textarea[name=descEn]').fill('Riverside hotel steps from Karnak Temple.');
   await editor.locator('textarea[name=descAr]').fill('فندق على النيل بالقرب من معبد الكرنك.');
-  await editor.locator('select[name=destinationId]').selectOption({ label: 'Luxor' });
+  await chooseOption(page, editor.getByTestId('select-destinationId'), { label: 'Luxor' });
   // Location: set the pin from the destination centre, then fine-tune the coordinates.
   await editor.getByTestId('use-centre').click();
   await editor.locator('input[name=lat]').fill('25.7101');
@@ -89,7 +89,7 @@ test('platform admin manages locations: destination with coordinates and a place
   await expect(page.getByTestId('destinations-table').getByText('Fayoum').first()).toBeVisible();
 
   await page.getByTestId('tab-places').click();
-  await page.locator('select[name=placesDestination]').selectOption({ label: 'Fayoum' });
+  await chooseOption(page, page.getByTestId('select-placesDestination'), { label: 'Fayoum' });
   await page.getByTestId('new-place').click();
   const pe = page.getByTestId('place-editor');
   await pe.locator('input[name=nameEn]').fill('Wadi El Rayan');

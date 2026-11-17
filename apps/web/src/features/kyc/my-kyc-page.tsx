@@ -16,6 +16,7 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardBody, CardHeader } from '@/components/ui/card';
 import { Field } from '@/components/ui/field';
+import { DateInput } from '@/components/ui/date-picker';
 import { Input, Select } from '@/components/ui/input';
 import { PageHeader } from '@/components/ui/page-header';
 import { Sheet } from '@/components/ui/sheet';
@@ -191,8 +192,8 @@ function UploadSheet({ docType, onClose }: { docType: KycDocType; onClose: () =>
       <form onSubmit={submit} noValidate className="flex flex-col gap-4">
         <Field label={t('kyc.number')} required error={e.number?.message}><Input dir="ltr" {...form.register('number')} /></Field>
         <div className="grid gap-4 sm:grid-cols-2">
-          <Field label={t('kyc.issueDate')} required error={e.issueDate?.message}><Input type="date" {...form.register('issueDate')} /></Field>
-          <Field label={t('kyc.expiryDate')} required error={e.expiryDate?.message}><Input type="date" {...form.register('expiryDate')} /></Field>
+          <Field label={t('kyc.issueDate')} required error={e.issueDate?.message}><DateInput {...form.register('issueDate')} /></Field>
+          <Field label={t('kyc.expiryDate')} required error={e.expiryDate?.message}><DateInput {...form.register('expiryDate')} /></Field>
         </div>
         <Field label={t('kyc.file')} required error={fileError}>
           <Input type="file" accept={KYC_FILE_TYPES.join(',')} className="py-1.5" onChange={async (ev) => {

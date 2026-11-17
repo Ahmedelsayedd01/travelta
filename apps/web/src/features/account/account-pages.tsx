@@ -252,12 +252,12 @@ function TravelerEditor({ traveler, onClose }: { traveler: SavedTravelerEntity |
           options={titles.map((x) => ({ value: x, label: t(`title_${x}`) }))} />
         <Field label={t('firstName')} required error={msg(errors.firstName)}><Input name="firstName" autoComplete="given-name" value={v.firstName} onChange={(e) => setV({ ...v, firstName: e.target.value })} /></Field>
         <Field label={t('lastName')} required error={msg(errors.lastName)}><Input name="lastName" autoComplete="family-name" value={v.lastName} onChange={(e) => setV({ ...v, lastName: e.target.value })} /></Field>
-        <FormDatePicker label={t('dateOfBirth')} name="dateOfBirth" required={v.type !== 'adult'} optional={v.type === 'adult'} value={v.dateOfBirth ?? ''} max={today} min="1920-01-01"
+        <FormDatePicker yearNav clearable={v.type === 'adult'} label={t('dateOfBirth')} name="dateOfBirth" required={v.type !== 'adult'} optional={v.type === 'adult'} value={v.dateOfBirth ?? ''} max={today} min="1920-01-01"
           error={msg(errors.dateOfBirth)} onChange={(x) => setV({ ...v, dateOfBirth: x })} placeholder={t('chooseDate')} />
         <FormSelect label={t('nationality')} optional name="nationalityIso2" value={v.nationalityIso2 ?? ''} onValueChange={(x) => setV({ ...v, nationalityIso2: x || null })}
           options={[{ value: '', label: t('notSet') }, ...countries]} error={msg(errors.nationalityIso2)} />
         <Field label={t('passportNo')} optional error={msg(errors.passportNo)}><Input name="passportNo" dir="ltr" autoComplete="off" value={v.passportNo ?? ''} onChange={(e) => setV({ ...v, passportNo: e.target.value.toUpperCase() || null })} /></Field>
-        <FormDatePicker label={t('passportExpiry')} name="passportExpiry" required={Boolean(v.passportNo)} optional={!v.passportNo} value={v.passportExpiry ?? ''} min={today} max="2045-12-31"
+        <FormDatePicker yearNav clearable={!v.passportNo} label={t('passportExpiry')} name="passportExpiry" required={Boolean(v.passportNo)} optional={!v.passportNo} value={v.passportExpiry ?? ''} min={today} max="2045-12-31"
           error={msg(errors.passportExpiry)} onChange={(x) => setV({ ...v, passportExpiry: x })} placeholder={t('chooseDate')} />
       </form>
     </Sheet>

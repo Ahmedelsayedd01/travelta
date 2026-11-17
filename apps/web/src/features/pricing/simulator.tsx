@@ -16,6 +16,7 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardBody, CardHeader } from '@/components/ui/card';
 import { Field } from '@/components/ui/field';
+import { DateInput } from '@/components/ui/date-picker';
 import { Input, Select } from '@/components/ui/input';
 import { useErrorMessage } from '@/lib/errors';
 import { applyFieldErrors } from '@/lib/mutations';
@@ -64,7 +65,7 @@ export function PricingSimulator() {
             <Field label={t('suppliers.currency')}>{sel('netCurrency', CURRENCY_CODES, (o) => o)}</Field>
             <Field label={t('pricing.quantity')} error={e.quantity?.message}><Input type="number" min={1} max={99} {...form.register('quantity', { valueAsNumber: true })} /></Field>
             <Field label={t('pricing.targetCurrency')}>{sel('targetCurrency', CURRENCY_CODES, (o) => o)}</Field>
-            <Field label={t('pricing.travelDate')} error={e.travelDate?.message}><Input type="date" {...form.register('travelDate')} /></Field>
+            <Field label={t('pricing.travelDate')} error={e.travelDate?.message}><DateInput {...form.register('travelDate')} /></Field>
             <Field label={t('pricing.promoCode')} optional error={e.promoCode?.message}><Input dir="ltr" {...form.register('promoCode')} /></Field>
             {isPlatform && agencies.data && (
               <Field className="sm:col-span-2" label={t('pricing.agency')}>

@@ -12,6 +12,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardBody, CardHeader } from '@/components/ui/card';
 import { Dialog } from '@/components/ui/dialog';
 import { Field } from '@/components/ui/field';
+import { DateInput } from '@/components/ui/date-picker';
 import { Input, Select, Textarea } from '@/components/ui/input';
 import { useDemoToday } from '@/features/demo/hooks';
 import { useAction } from '@/lib/mutations';
@@ -94,8 +95,8 @@ export function RequestDialog({ request, party, onClose, onSaved }: { request: R
         <Field label={t('title')} required error={errors.title} className="sm:col-span-2"><Input name="title" value={v.title} onChange={(e) => setV({ ...v, title: e.target.value })} /></Field>
         <Field label={t('service')}><Select name="serviceType" value={v.serviceType} onChange={(e) => setV({ ...v, serviceType: e.target.value as ServiceType })}>{SERVICE_TYPES.map((s) => <option key={s} value={s}>{te(`serviceType.${s}`)}</option>)}</Select></Field>
         <Field label={t('destination')}><Input name="destination" value={v.destination} onChange={(e) => setV({ ...v, destination: e.target.value })} /></Field>
-        <Field label={t('from')} error={errors.from}><Input type="date" name="from" value={v.from} onChange={(e) => setV({ ...v, from: e.target.value })} /></Field>
-        <Field label={t('to')} optional error={errors.to}><Input type="date" name="to" value={v.to} onChange={(e) => setV({ ...v, to: e.target.value })} /></Field>
+        <Field label={t('from')} error={errors.from}><DateInput name="from" value={v.from} onChange={(e) => setV({ ...v, from: e.target.value })} /></Field>
+        <Field label={t('to')} optional error={errors.to}><DateInput name="to" value={v.to} onChange={(e) => setV({ ...v, to: e.target.value })} /></Field>
         <Field label={t('adults')} error={errors.adults}><Input type="number" min={1} name="adults" value={v.adults} onChange={(e) => setV({ ...v, adults: e.target.value })} /></Field>
         <Field label={t('children')}><Input type="number" min={0} name="children" value={v.children} onChange={(e) => setV({ ...v, children: e.target.value })} /></Field>
         <Field label={t('priority')}><Select name="priority" value={v.priority} onChange={(e) => setV({ ...v, priority: e.target.value as typeof v.priority })}>{(['low', 'medium', 'high'] as const).map((p) => <option key={p} value={p}>{te(`priority.${p}`)}</option>)}</Select></Field>
@@ -120,7 +121,7 @@ export function FollowUpDialog({ entity, onClose }: { entity: CrmEntityRef; onCl
       footer={<><Button variant="outline" onClick={onClose}>{t('cancel')}</Button><Button onClick={() => save.mutate()} loading={save.isPending} data-testid="followup-save">{t('save')}</Button></>}>
       <div className="grid gap-3 sm:grid-cols-3" data-testid="followup-form">
         <Field label={t('type')}><Select name="type" value={v.type} onChange={(e) => setV({ ...v, type: e.target.value as typeof v.type })}>{(['call', 'whatsapp', 'email', 'meeting'] as const).map((x) => <option key={x} value={x}>{t(`fu_${x}`)}</option>)}</Select></Field>
-        <Field label={t('date')}><Input type="date" name="date" value={v.date} onChange={(e) => setV({ ...v, date: e.target.value })} /></Field>
+        <Field label={t('date')}><DateInput name="date" value={v.date} onChange={(e) => setV({ ...v, date: e.target.value })} /></Field>
         <Field label={t('time')}><Input type="time" name="time" value={v.time} onChange={(e) => setV({ ...v, time: e.target.value })} /></Field>
         {manageAll && <Field label={t('assignee')} className="sm:col-span-3"><Select name="assignee" value={v.assigneeUserId} onChange={(e) => setV({ ...v, assigneeUserId: e.target.value })}><option value="">{t('me')}</option>{(users.data ?? []).map((u) => <option key={u.id} value={u.id}>{u.name}</option>)}</Select></Field>}
         <Field label={t('note')} optional className="sm:col-span-3"><Input name="note" value={v.note} onChange={(e) => setV({ ...v, note: e.target.value })} /></Field>

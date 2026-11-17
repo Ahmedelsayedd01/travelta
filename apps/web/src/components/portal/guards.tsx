@@ -3,7 +3,7 @@
 import type { Permission, Portal } from '@travelta/contracts';
 import { CalendarClock, ShieldX } from 'lucide-react';
 import { useTranslations } from 'next-intl';
-import { useEffect, type ReactNode } from 'react';
+import { useEffect, useRef, type ReactNode } from 'react';
 import { buttonVariants } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useMe } from '@/features/auth/hooks';
@@ -31,9 +31,15 @@ export function PortalGuard({ portal, children }: { portal: Portal; children: Re
   const allowed = hydrated && session !== null && session.user.userType === audienceOf(portal) && session.portal === portal;
   useMe(allowed);
 
+  // A customer who signs out from an account page goes to the storefront home, not back to the sign-in page.
+  const hadSession = useRef(false);
+
   useEffect(() => {
     if (!hydrated) return;
-    if (!session || session.user.userType !== audienceOf(portal)) {
+    if (session) hadSession.current = true;
+    if (!session && portal === 'account' && hadSession.current) {
+      router.replace('/');
+    } else if (!session || session.user.userType !== audienceOf(portal)) {
       router.replace(`${loginPathOf(portal)}?next=${encodeURIComponent(pathname)}`);
     } else if (session.portal !== portal) {
       router.replace(homeAfterSignIn(session.portal));

@@ -12,6 +12,7 @@ import { EmptyState } from '@/components/feedback/states';
 import { Button } from '@/components/ui/button';
 import { Card, CardBody, CardHeader } from '@/components/ui/card';
 import { Field } from '@/components/ui/field';
+import { DateInput } from '@/components/ui/date-picker';
 import { Input, Select } from '@/components/ui/input';
 import { PageHeader } from '@/components/ui/page-header';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -105,8 +106,8 @@ export function RatesPage() {
             <CardHeader title={t('catalog.bulkEdit')} />
             <CardBody className="flex flex-col gap-4" data-testid="bulk-edit">
               <div className="grid grid-cols-2 gap-3">
-                <Field label={t('catalog.dateFrom')}><Input type="date" name="bulkFrom" value={bulk.from} onChange={(e) => setBulk({ ...bulk, from: e.target.value })} /></Field>
-                <Field label={t('catalog.dateTo')}><Input type="date" name="bulkTo" value={bulk.to} onChange={(e) => setBulk({ ...bulk, to: e.target.value })} /></Field>
+                <Field label={t('catalog.dateFrom')}><DateInput name="bulkFrom" value={bulk.from} onChange={(e) => setBulk({ ...bulk, from: e.target.value })} /></Field>
+                <Field label={t('catalog.dateTo')}><DateInput name="bulkTo" value={bulk.to} onChange={(e) => setBulk({ ...bulk, to: e.target.value })} /></Field>
               </div>
               <fieldset>
                 <legend className="mb-1.5 text-sm font-medium text-fg">{t('catalog.weekdays')}</legend>
