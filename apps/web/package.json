@@ -10,6 +10,12 @@
     "typecheck": "tsc --noEmit && tsc --noEmit -p e2e",
     "lint": "eslint .",
     "e2e": "playwright test",
+    "e2e:smoke": "playwright test --project=desktop e2e/smoke",
+    "e2e:functional": "playwright test --project=desktop --project=mobile e2e/services e2e/customer",
+    "e2e:roles": "playwright test --project=desktop --project=service e2e/admin e2e/agency e2e/supplier e2e/security",
+    "e2e:lifecycle": "playwright test --project=desktop e2e/lifecycle e2e/finance",
+    "e2e:responsive": "playwright test --project=desktop --project=desktop-1920 --project=tablet-landscape --project=tablet-portrait --project=mobile-430 --project=mobile-390 --project=mobile-375 --project=mobile e2e/responsive e2e/a11y",
+    "e2e:cross-browser": "playwright test --project=firefox --project=webkit",
     "e2e:report": "playwright show-report e2e-report",
     "test": "vitest run"
   },

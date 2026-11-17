@@ -1,4 +1,4 @@
-import { expect, test } from './fixtures';
+import { expect, test } from '../fixtures';
 
 /** Landing page: real, loaded photos for the hero and every service; destinations and popular rows backed by live search. */
 test('landing page shows loaded service photos, featured destinations and live popular rows', async ({ page }) => {
@@ -9,9 +9,14 @@ test('landing page shows loaded service photos, featured destinations and live p
   await expect(page.getByTestId('popular-hotel').locator('li').first()).toBeVisible({ timeout: 30_000 });
   await expect(page.getByTestId('popular-umrah').locator('li').first()).toBeVisible({ timeout: 30_000 });
   // Every photo on the page actually decoded (no broken images); each service tile uses its own photo.
-  await page.evaluate(async () => { for (const img of Array.from(document.images)) { img.loading = 'eager'; if (!img.complete) await new Promise((r) => { img.onload = r; img.onerror = r; }); } });
-  const broken = await page.evaluate(() => Array.from(document.images).filter((i) => i.naturalWidth === 0).map((i) => i.currentSrc || i.src));
-  expect(broken).toEqual([]);
+  // Scroll through the page like a visitor so lazy images load with their normal responsive source.
+  await page.evaluate(async () => {
+    for (let y = 0; y < document.body.scrollHeight; y += window.innerHeight / 2) { window.scrollTo(0, y); await new Promise((r) => setTimeout(r, 120)); }
+    window.scrollTo(0, 0);
+  });
+  // Every image that started loading must decode; a broken one never does, so it fails after the timeout.
+  await expect.poll(() => page.evaluate(() => Array.from(document.images).filter((i) => i.currentSrc && i.naturalWidth === 0).map((i) => i.currentSrc)), { timeout: 15_000 }).toEqual([]);
+  expect(await page.evaluate(() => Array.from(document.images).filter((i) => !i.currentSrc).length), 'images never requested after scrolling the whole page').toBe(0);
   const pairs = await tiles.evaluateAll((els) => els.map((e) => [e.getAttribute('data-service'), e.querySelector('[data-photo]')?.getAttribute('data-photo') ?? '']));
   expect(new Set(pairs.map(([, p]) => p)).size).toBe(7);
   for (const [service, photo] of pairs) expect(photo, `${service} tile`).toMatch(new RegExp(`^${service}-`));

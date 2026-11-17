@@ -1,4 +1,4 @@
-import { expect, expectNoHorizontalOverflow, signIn, test, ACCOUNTS } from './fixtures';
+import { expect, expectNoHorizontalOverflow, signIn, test, ACCOUNTS } from '../fixtures';
 
 test('phone: compact profile menu and scrollable account navigation', async ({ page }) => {
   await signIn(page, ACCOUNTS.customer, 'customer');

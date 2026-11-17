@@ -853,7 +853,9 @@
     "decision_accept_document": "Document accepted",
     "decision_reject_document": "Document rejected",
     "approveHint": "All three documents must be accepted and valid.",
-    "by": "by {name}"
+    "by": "by {name}",
+    "coveredByParentTitle": "Verified through your parent agency",
+    "coveredByParentBody": "Sub-agencies don't have their own compliance case: your parent agency's verified documents cover your account. Contact your parent agency if anything changes."
   },
   "pricing": {
     "title": "Pricing",
@@ -983,7 +985,8 @@
     "maxDiscount": "Max manual discount by role %",
     "csSaved": "Commercial settings saved",
     "adminFee": "Cancellation admin fee",
-    "payLater": "Allow storefront pay-later"
+    "payLater": "Allow storefront pay-later",
+    "discountValue": "Discount"
   },
   "catalog": {
     "productsTitle": "Products",

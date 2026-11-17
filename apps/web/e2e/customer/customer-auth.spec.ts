@@ -1,4 +1,4 @@
-import { expect, signOut, test } from './fixtures';
+import { expect, signOut, test } from '../fixtures';
 
 const fillOtp = async (scope: import('@playwright/test').Locator, code: string) => scope.locator('input').first().fill(code);
 

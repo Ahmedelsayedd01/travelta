@@ -165,3 +165,24 @@
 @media (prefers-reduced-motion: reduce) {
   .tv-enter, .tv-enter-stagger > * { animation: none; }
 }
+
+/*
+ * Toasts use the design system's status colours (contrast-tested: text on its tinted background ≥ 4.5:1 in light
+ * and dark) instead of Sonner's built-in rich colours, whose success green failed WCAG AA (4.25:1).
+ * `html` raises specificity above the styles Sonner injects at runtime.
+ */
+html [data-sonner-toaster][data-sonner-theme] {
+  --success-bg: var(--tv-success-bg);
+  --success-text: var(--tv-success);
+  --success-border: color-mix(in srgb, var(--tv-success) 30%, transparent);
+  --error-bg: var(--tv-danger-bg);
+  --error-text: var(--tv-danger);
+  --error-border: color-mix(in srgb, var(--tv-danger) 30%, transparent);
+  --warning-bg: var(--tv-warning-bg);
+  --warning-text: var(--tv-warning);
+  --warning-border: color-mix(in srgb, var(--tv-warning) 30%, transparent);
+  --info-bg: var(--tv-info-bg);
+  --info-text: var(--tv-info);
+  --info-border: color-mix(in srgb, var(--tv-info) 30%, transparent);
+}
+

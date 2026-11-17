@@ -1,4 +1,4 @@
-import { chooseOption, expect, searchUrl, signIn, test, ACCOUNTS } from './fixtures';
+import { chooseOption, expect, searchUrl, signIn, test, ACCOUNTS } from '../fixtures';
 
 /** Scenario A — the platform admin manages a hotel end to end and public search follows its status. */
 test('platform admin creates, edits, deactivates, reactivates, archives and deletes a hotel', async ({ page }) => {

@@ -1,5 +1,5 @@
 import type { Page } from '@playwright/test';
-import { chooseOption, expect, searchUrl, signIn, test, ACCOUNTS } from './fixtures';
+import { chooseOption, expect, searchUrl, signIn, test, ACCOUNTS } from '../fixtures';
 
 /** Staff see source badges and pick the network (extranet) offer; customers just take the first result. */
 async function addHotelToCart(page: Page, path: string, network: boolean) {

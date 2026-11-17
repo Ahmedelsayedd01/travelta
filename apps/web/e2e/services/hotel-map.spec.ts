@@ -1,4 +1,4 @@
-import { expect, hittablePricePill, searchUrl, test } from './fixtures';
+import { expect, hittablePricePill, searchUrl, test } from '../fixtures';
 
 /** Scenario B (desktop) — results and map stay linked both ways; the hotel page shows its location and surroundings. */
 test('hotel results on an interactive map with two-way selection and hotel location details', async ({ page }) => {

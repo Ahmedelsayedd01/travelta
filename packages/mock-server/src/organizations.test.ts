@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { DEMO_PASSWORD } from './seed/identity';
 import { testServer } from './test-utils';
+import { destId, findOffer } from './test-flows';
 
 type Server = ReturnType<typeof testServer>['server'];
 const login = (server: Server, email: string) => server.handle('auth.login', { email, password: DEMO_PASSWORD, audience: 'staff' });
@@ -183,5 +184,24 @@ describe('suppliers & contracts', () => {
     const alnoor = await login(server, 'owner@alnoor.demo');
     const list = await server.handle('suppliers.list', { ...page, filters: { kind: 'own' } }, alnoor.token);
     expect(list.total).toBe(0);
+  });
+
+  it('only active agencies can book: suspended, pending-KYC and expired-document agencies are refused (KYC-4/5, TENANCY §74)', async () => {
+    const { server } = testServer();
+    const admin = await login(server, 'admin@travelta.demo');
+    const hotel = { serviceType: 'hotel' as const, destinationId: await destId(server, 'LXR'), from: '2026-12-01', to: '2026-12-04', rooms: [{ adults: 2, childAges: [] }] };
+    const addFirstOffer = async (email: string) => {
+      const agency = await login(server, email);
+      const { option } = await findOffer(server, agency.token, hotel);
+      return server.handle('cart.addOffer', { offerId: option.offerId }, agency.token);
+    };
+    await expect(addFirstOffer('owner@redsea.demo')).rejects.toMatchObject({ code: 'ORG_NOT_ELIGIBLE' }); // pending KYC
+    await expect(addFirstOffer('owner@sunrise.demo')).rejects.toMatchObject({ code: 'ORG_NOT_ELIGIBLE' }); // expired documents
+    const alNoor = (await server.handle('orgs.list', page, admin.token)).items.find((o) => o.slug === 'al-noor-travel' || o.name.en.toLowerCase().includes('noor'))!;
+    expect((await addFirstOffer('owner@alnoor.demo')).items).toHaveLength(1);
+    await server.handle('orgs.setStatus', { id: alNoor.id, status: 'suspended', reason: 'Compliance hold' }, admin.token);
+    await expect(addFirstOffer('owner@alnoor.demo')).rejects.toMatchObject({ code: 'ORG_NOT_ELIGIBLE' });
+    await server.handle('orgs.setStatus', { id: alNoor.id, status: 'active', reason: 'Hold lifted' }, admin.token);
+    expect((await addFirstOffer('owner@alnoor.demo')).items.length).toBeGreaterThan(0);
   });
 });

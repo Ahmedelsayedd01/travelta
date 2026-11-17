@@ -65,7 +65,7 @@ export function OfferSheet({ result, staff, context, onOpenChange, actions }: Of
               {result.options.map((o) => {
                 const on = o.offerId === offerId;
                 return (
-                  <button key={o.offerId} type="button" role="radio" aria-checked={on} onClick={() => setPicked(o.offerId)} data-testid="offer-option"
+                  <button key={o.offerId} type="button" role="radio" aria-checked={on} onClick={() => setPicked(o.offerId)} data-testid="offer-option" data-source={o.source}
                     className={cn('flex items-center gap-3 rounded-lg border px-4 py-3 text-start transition-colors', on ? 'border-primary bg-primary-soft/40 ring-1 ring-primary' : 'border-border hover:bg-subtle')}>
                     <span className={cn('flex size-5 shrink-0 items-center justify-center rounded-full border', on ? 'border-primary bg-primary text-on-primary' : 'border-border-strong')}>
                       {on && <Check className="size-3" strokeWidth={3} aria-hidden />}

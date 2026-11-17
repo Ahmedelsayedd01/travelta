@@ -1,4 +1,4 @@
-import { expect, expectNoHorizontalOverflow, hittablePricePill, searchUrl, test } from './fixtures';
+import { expect, expectNoHorizontalOverflow, hittablePricePill, searchUrl, test } from '../fixtures';
 
 /** Scenario B on a phone — "Show map" opens a full map, tapping a price previews the hotel, "Show list" returns. */
 test('mobile hotel map: show map, tap a marker for a preview card, back to the list', async ({ page }) => {

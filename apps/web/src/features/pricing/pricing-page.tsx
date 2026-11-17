@@ -150,7 +150,7 @@ function PromosTab() {
     <>
       <div className="mb-3 flex justify-end"><Can permission="pricing.discount"><Button onClick={() => setEditing({ code: '', mode: 'percent', value: 10, serviceTypes: [], validFrom: today, validTo: addDays(today, 90), maxUses: null, status: 'active' })}><Plus aria-hidden />{t('pricing.newPromo')}</Button></Can></div>
       {(promos.data ?? []).length === 0 ? <EmptyState title={t('pricing.tabPromos')} /> : (
-        <Table data-testid="promos-table"><THead><tr><Th>{t('pricing.code')}</Th><Th numeric>{t('pricing.value')}</Th><Th>{t('pricing.validTo')}</Th><Th numeric>{t('pricing.uses')}</Th><Th>{t('pricing.status')}</Th><Th /></tr></THead>
+        <Table data-testid="promos-table"><THead><tr><Th>{t('pricing.code')}</Th><Th numeric>{t('pricing.discountValue')}</Th><Th>{t('pricing.validTo')}</Th><Th numeric>{t('pricing.uses')}</Th><Th>{t('pricing.status')}</Th><Th /></tr></THead>
           <TBody>{(promos.data ?? []).map((p) => (
             <Tr key={p.id}><Td><code dir="ltr" className="font-semibold">{p.code}</code> {p.isDemoValue && <DemoBadge />}</Td><Td numeric>{p.mode === 'percent' ? `${p.value}%` : p.value}</Td>
               <Td>{format.dateTime(new Date(p.validTo), { dateStyle: 'medium' })}</Td><Td numeric>{p.uses}{p.maxUses ? ` / ${p.maxUses}` : ''}</Td>
@@ -162,12 +162,17 @@ function PromosTab() {
         footer={<><Button variant="outline" onClick={() => setEditing(null)}>{t('common.cancel')}</Button><Button loading={save.isPending} disabled={!/^[A-Za-z0-9-]{3,20}$/.test(editing?.code ?? '')} onClick={() => editing && save.mutate({ ...editing, code: editing.code.toUpperCase() })}>{t('common.save')}</Button></>}>
         {editing && (
           <div className="grid gap-4 sm:grid-cols-2">
-            <Field label={t('pricing.code')} required><Input dir="ltr" value={editing.code} onChange={(e) => setEditing({ ...editing, code: e.target.value.toUpperCase() })} /></Field>
-            <Field label={t('pricing.value')}><Input type="number" min={0} value={editing.value} onChange={(e) => setEditing({ ...editing, value: Number(e.target.value) })} /></Field>
+            <Field label={t('pricing.code')} required><Input dir="ltr" name="promoCode" value={editing.code} onChange={(e) => setEditing({ ...editing, code: e.target.value.toUpperCase() })} /></Field>
+            <Field label={t('pricing.discountValue')}><Input type="number" min={0} name="promoValue" value={editing.value} onChange={(e) => setEditing({ ...editing, value: Number(e.target.value) })} /></Field>
             <Field label={t('pricing.validFrom')}><DateInput value={editing.validFrom} onChange={(e) => setEditing({ ...editing, validFrom: e.target.value })} /></Field>
             <Field label={t('pricing.validTo')}><DateInput value={editing.validTo} onChange={(e) => setEditing({ ...editing, validTo: e.target.value })} /></Field>
             <Field label={t('pricing.maxUses')} optional><Input type="number" min={1} value={editing.maxUses ?? ''} placeholder={t('pricing.unlimited')} onChange={(e) => setEditing({ ...editing, maxUses: e.target.value ? Number(e.target.value) : null })} /></Field>
-            <Field label={t('pricing.mode')}><Select value={editing.mode} onChange={(e) => setEditing({ ...editing, mode: e.target.value as 'percent' | 'fixed' })}><option value="percent">{t('enums.markupMode.percent')}</option><option value="fixed">{t('enums.markupMode.fixed')}</option></Select></Field>
+            <Field label={t('pricing.mode')}><Select name="promoMode" value={editing.mode} onChange={(e) => setEditing({ ...editing, mode: e.target.value as 'percent' | 'fixed' })}><option value="percent">{t('enums.markupMode.percent')}</option><option value="fixed">{t('enums.markupMode.fixed')}</option></Select></Field>
+            <Field label={t('pricing.status')}>
+              <Select name="promoStatus" value={editing.status ?? 'active'} onChange={(e) => setEditing({ ...editing, status: e.target.value as 'active' | 'inactive' })}>
+                <option value="active">{t('pricing.active')}</option><option value="inactive">{t('pricing.inactive')}</option>
+              </Select>
+            </Field>
           </div>
         )}
       </Dialog>

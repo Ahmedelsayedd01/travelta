@@ -102,7 +102,7 @@ function ItemCard({ booking: b, item, base, extraActions }: { booking: BookingDt
   const details = Object.entries(item.details).filter(([k, v]) => k !== 'documents' && typeof v === 'string' && v);
   const supplierView = b.audience === 'supplier';
   return (
-    <Card data-testid="booking-item" data-item={item.id} data-status={item.status}>
+    <Card data-testid="booking-item" data-item={item.id} data-status={item.status} data-service={item.serviceType}>
       <CardBody className="flex flex-col gap-4">
         <div className="flex flex-col gap-4 sm:flex-row">
           <ProductThumb serviceType={item.serviceType} seed={seedOf(item.productId ?? item.id)} className="h-24 w-full shrink-0 sm:w-32" />

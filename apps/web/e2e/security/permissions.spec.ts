@@ -1,4 +1,4 @@
-import { expect, signIn, test, ACCOUNTS } from './fixtures';
+import { expect, signIn, test, ACCOUNTS } from '../fixtures';
 
 /** Scenario G — global access for the platform, tenant isolation for everyone else (enforced server-side). */
 test('platform admin sees every management area', async ({ page }) => {

@@ -1,4 +1,4 @@
-import { expect, expectAccessible, expectNoHorizontalOverflow, searchUrl, signIn, test, ACCOUNTS } from './fixtures';
+import { expect, expectAccessible, expectNoHorizontalOverflow, searchUrl, signIn, test, ACCOUNTS } from '../fixtures';
 
 /** Phone width + dark theme: no sideways scrolling and no WCAG AA violations on the main screens. */
 const SCREENS: [string | null, 'staff' | 'customer', string[]][] = [

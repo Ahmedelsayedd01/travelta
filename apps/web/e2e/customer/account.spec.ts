@@ -1,4 +1,4 @@
-import { expect, pickOption, searchUrl, signIn, signOut, test, ACCOUNTS } from './fixtures';
+import { expect, pickOption, searchUrl, signIn, signOut, test, ACCOUNTS } from '../fixtures';
 
 const SECTIONS = ['profile', 'bookings', 'travelers', 'favorites', 'notifications', 'support', 'settings'] as const;
 

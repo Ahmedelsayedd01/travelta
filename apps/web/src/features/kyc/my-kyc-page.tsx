@@ -11,6 +11,7 @@ import { useState } from 'react';
 import { useForm, type Resolver } from 'react-hook-form';
 import { useApi } from '@/components/api-provider';
 import { StatusBadge } from '@/components/data/status-badge';
+import { EmptyState, ErrorState } from '@/components/feedback/states';
 import { Can } from '@/components/portal/guards';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -46,6 +47,18 @@ export function MyKycPage() {
   const submit = useAction(() => api.call('kyc.submit'), { success: t('kyc.submitted'), invalidate: [['kyc'], ['auth']] });
   const requestLine = useAction((serviceType: ServiceType) => api.call('kyc.requestServiceLine', { serviceType }), { success: t('kyc.lineRequested'), invalidate: [['kyc']] });
 
+  if (kase.isError) {
+    // Sub-agencies have no case of their own (their parent's verification covers them): explain instead of failing.
+    const missing = (kase.error as { code?: string } | null)?.code === 'NOT_FOUND';
+    return (
+      <div className="flex flex-col gap-6">
+        <PageHeader title={t('kyc.title')} description={t('kyc.myDescription')} />
+        {missing
+          ? <EmptyState icon={<CheckCircle2 aria-hidden />} title={t('kyc.coveredByParentTitle')} body={t('kyc.coveredByParentBody')} />
+          : <ErrorState onRetry={() => void kase.refetch()} />}
+      </div>
+    );
+  }
   if (!kase.data) return <Skeleton className="h-96 w-full" />;
   const c: KycCaseDto = kase.data;
   const docOf = (type: KycDocType) => c.documents.find((d) => d.docType === type);

@@ -1,40 +1,54 @@
 # Web end-to-end tests (Playwright + axe-core)
 
-Real browser tests against the production build of the web app. Every test starts from freshly seeded demo data:
-each test gets its own browser context, so the in-browser mock server gets its own IndexedDB.
+Real browser tests against the production build of the web app. **Every test starts from freshly seeded demo data:** each test gets its own browser context, so the in-browser mock server gets its own IndexedDB. Tests don't depend on each other or on their order.
+
+Strategy, coverage and results: [`docs/QA/`](../../../docs/QA/).
 
 ## Run
 
 ```bash
-pnpm --filter @travelta/web build           # once after code changes
-pnpm --filter @travelta/web start           # serves http://localhost:3001 (keep running)
-pnpm --filter @travelta/web e2e             # all tests (desktop + mobile projects)
-pnpm --filter @travelta/web e2e -- --project=desktop e2e/hotel-map.spec.ts   # one file
-pnpm --filter @travelta/web e2e:report      # open the HTML report (e2e-report/)
+pnpm --filter @travelta/web build                 # once after code changes
+pnpm --filter @travelta/web start                 # serves http://localhost:3001 (keep running)
+export E2E_BASE_URL=http://localhost:3001         # reuse that server (otherwise Playwright builds and starts it)
+
+pnpm --filter @travelta/web e2e                   # everything (all projects)
+pnpm --filter @travelta/web e2e:smoke             # stage 1
+pnpm --filter @travelta/web e2e:functional        # stage 2: services + customer
+pnpm --filter @travelta/web e2e:roles             # stage 3: admin, agency, supplier, security (+ service boundary)
+pnpm --filter @travelta/web e2e:lifecycle         # stage 4: cross-role workflows, pricing, payments
+pnpm --filter @travelta/web e2e:responsive        # stage 5: device matrix + accessibility
+pnpm --filter @travelta/web e2e:cross-browser     # Firefox + WebKit (@smoke and @xbrowser tests)
+pnpm --filter @travelta/web e2e:report            # HTML report (e2e-report/); JSON in e2e-report/results.json
 ```
 
-- **Browser:** the locally installed Google Chrome by default. To use Playwright's bundled Chromium instead, run `pnpm --filter @travelta/web exec playwright install chromium` and set `PW_CHANNEL=`.
-- **Starting the server:** without `E2E_BASE_URL`, Playwright starts `pnpm build && pnpm start` itself, reusing a running server if one is up. Set `E2E_BASE_URL=http://localhost:3001` to point at a server you started.
-- **Workers:** set `E2E_WORKERS=n` to change the number of parallel workers (default 3).
+- **Browsers:** Chromium projects use the locally installed Google Chrome (`PW_CHANNEL=` switches to Playwright's Chromium). Firefox and WebKit need `pnpm --filter @travelta/web exec playwright install firefox webkit`.
+- **Workers:** `E2E_WORKERS=n` (default 3).
+- **On failure:** a trace, a screenshot and a video are kept in `e2e-results/`.
 
-## Suites
+## Layout
 
-| File | Covers |
+| Folder | Covers |
 |---|---|
-| `admin-catalog.spec.ts` | Scenario A. Platform admin creates a hotel for a supplier with location and coordinates, adds a room type, edits it, publishes, pauses (gone from public search), reactivates (back), archives and deletes it, with the audit log. Also location management (destination + place, with server coordinate validation) and editing an agency profile. |
-| `permissions.spec.ts` | Scenario G. Platform sees every management area. An agency opening another agency's booking by URL gets "not found". Supplier and customer are kept out of other portals. |
-| `hotel-map.spec.ts` | Scenario B on desktop. Split list + map, marker → card and card → marker highlighting, filters kept across views, "search as I move the map" with an empty-area state, and the hotel location panel (coordinates, nearby places, directions). |
-| `hotel-map.mobile.spec.ts` | Scenario B on a phone (Pixel 7). "Show map", tap a price pill to see a preview card, then "Show list". |
-| `customer-auth.spec.ts` | Registration, email verification (OTP), forgot password (wrong code rejected), reset, and sign-in with the new password. No account enumeration. |
-| `booking-lifecycle.spec.ts` | Scenarios C, D, E, F, H. Agency booking held on the wallet → supplier confirms on its board and sees the payable → invoice → payment collected → voucher → cancellation with fee and refund → trial balance balanced. Also a customer storefront booking with a card, My bookings and self-service cancellation. |
-| `search-form.spec.ts` | Category switching: each of the 7 tabs shows its own fields, and the showcase shows that category's cards and photos. Validation: no errors before interaction; errors on submit next to their fields, cleared when fixed; visa nationality; same-airport flights; swap route. Date picker: disabled days, check-out following check-in, keyboard. Tabs and selects by keyboard. Arabic RTL. Reduced motion. |
-| `services.spec.ts` | Search → results → details for each of the 7 services, and an Arabic customer journey. |
-| `account-and-finance.spec.ts` | Customer favourites, the profit breakdown on the dashboard, and the custom-domain flow with the "DNS/SSL not connected" notice. |
-| `accessibility.spec.ts` | axe-core WCAG 2.1 A/AA on 26 screens across public pages, admin, agency, supplier and customer. |
-| `responsive.mobile.spec.ts` | Phone width + dark theme: no horizontal scrolling, plus axe on the main screens. |
+| `smoke/` | Landing, every service tab, each role signs in and **every page in its navigation renders** (heading, no error, no forbidden); performance probe (recorded, not asserted) |
+| `services/` | All 7 services: search → details (`services.spec`), **booking → My bookings → cancel** (`booking-per-service.spec`), search form validation and category switching, hotel maps, landing visuals |
+| `customer/` | Registration, OTP verification, password reset, account UX (profile menu, profile, bookings, travellers, favourites, support, settings), phone account navigation |
+| `admin/` | Catalogue and locations CRUD, organisation edit, promo codes, KYC approval, team invitations, sub-agencies |
+| `agency/` | Customers, wallet top-up approved by the platform (exact balance), markup rule versioning |
+| `supplier/` | Net price → customer price (independent maths), product description → customers, isolation |
+| `lifecycle/` | Agency B2B and customer B2C cycles across roles, supplier confirm or reject, stop-sell, trial balance |
+| `finance/` | Price chain with **independently computed** expected values; declined, 3-D Secure, double submit, pay later; instalment due-date rule |
+| `security/` | UI permissions; `*.service.spec.ts` calls the backend directly in Node with real tokens (no session, wrong role, cross-agency, cross-supplier, cross-customer, logout, suspension, one-level sub-agencies) |
+| `responsive/` | `*.matrix.spec.ts` at 1440, 1920, 1024×768, 768×1024, 430, 390 and 375; phone journeys; dashboard selects and date pickers |
+| `a11y/` | axe on 26 screens + open menus and dialogs + checkout steps + toasts in light and dark; keyboard and focus |
+| `pages/` | Page objects: `SearchResults`, `OfferSheet`, `Checkout`, design-system `selectValue` / `pickDate` |
+| `factories/` | Unique e-mails and names, dates relative to today, demo cards |
+| `helpers/` | `demoBackend()` service-boundary harness |
 
 ## Conventions
 
-- **Fixtures** (`fixtures.ts`): demo accounts, real-form `signIn` and `signOut`, `expectAccessible` (axe), `expectNoHorizontalOverflow`, `waitForContent`, `searchUrl` and `hittablePricePill`.
-- **Console guard:** every test fails on browser console errors, page errors and HTTP 4xx/5xx responses. OpenStreetMap tile failures are ignored because they are third-party imagery.
-- **Selectors:** prefer roles and accessible names. Fall back to `data-testid` where the UI already has one.
+- **Fixtures** (`fixtures.ts`): demo accounts, real-form `signIn` and `signOut`, `expectAccessible` (axe), `expectNoHorizontalOverflow`, `waitForContent`, `pickOption` / `chooseOption`, `nextPersist`, `searchUrl`.
+- **Console guard:** every test fails on browser console errors, page errors and HTTP 4xx/5xx responses. The exceptions are OpenStreetMap tiles and WebKit's report of cancelled Next.js prefetches.
+- **Reload after a write:** start `nextPersist(page)` before the action and await it before `page.reload()`. The demo backend stores its snapshot just after a write.
+- **Money:** compute expected values in the test from the documented rules, never with the app's own engine.
+- **Selectors:** roles and accessible names first; `data-testid` where the UI has one.
+- **Tags:** `@smoke` and `@xbrowser` also run in Firefox and WebKit.

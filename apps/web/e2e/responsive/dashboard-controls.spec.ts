@@ -1,4 +1,4 @@
-import { expect, expectAccessible, expectNoHorizontalOverflow, pickOption, signIn, test, ACCOUNTS, waitForContent } from './fixtures';
+import { expect, expectAccessible, expectNoHorizontalOverflow, pickOption, signIn, test, ACCOUNTS, waitForContent } from '../fixtures';
 
 /** Dashboard selects and date fields use the design-system SelectField / DatePicker instead of native browser controls. */
 

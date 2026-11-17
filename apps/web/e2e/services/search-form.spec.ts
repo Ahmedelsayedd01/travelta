@@ -1,4 +1,4 @@
-import { expect, pickOption, test } from './fixtures';
+import { expect, pickOption, test } from '../fixtures';
 
 const CATEGORIES = ['hotel', 'flight', 'tour', 'activity', 'transfer', 'visa', 'umrah'] as const;
 

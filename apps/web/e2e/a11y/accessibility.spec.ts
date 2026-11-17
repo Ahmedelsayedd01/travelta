@@ -1,4 +1,4 @@
-import { expect, expectAccessible, searchUrl, signIn, test, ACCOUNTS } from './fixtures';
+import { expect, expectAccessible, searchUrl, signIn, test, ACCOUNTS } from '../fixtures';
 
 /** axe-core WCAG 2.1 AA on the key screens of every portal, light theme (dark + phone in accessibility.mobile.spec). */
 const PUBLIC = ['/en', '/ar', searchUrl('/en/search', { destinationCode: 'LXR' }), '/en/login', '/en/account/login', '/en/account/register', '/en/forgot-password', '/en/s/nile-horizon'];

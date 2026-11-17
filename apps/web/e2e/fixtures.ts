@@ -14,7 +14,11 @@ export const ACCOUNTS = {
 } as const;
 
 /** Console noise that is not an application error (map tiles are third-party images and may be offline). */
-const IGNORED_CONSOLE = [/tile\.openstreetmap\.org/, /Failed to load resource.*(png|tile)/i];
+const IGNORED_CONSOLE = [
+  /tile\.openstreetmap\.org/, /Failed to load resource.*(png|tile)/i,
+  // WebKit only: Next.js route prefetches (`?_rsc=`) cancelled by a navigation are logged as "access control" errors.
+  /[?&]_rsc=[\w-]+ due to access control checks/,
+];
 
 type Fixtures = { consoleErrors: string[] };
 
@@ -24,7 +28,7 @@ export const test = base.extend<Fixtures>({
     // HTTP failures are reported with their URL (the console only says "Failed to load resource").
     page.on('console', (m) => { if (m.type() === 'error' && !/^Failed to load resource/.test(m.text()) && !IGNORED_CONSOLE.some((r) => r.test(m.text()))) errors.push(m.text()); });
     page.on('response', (r) => { if (r.status() >= 400 && !IGNORED_CONSOLE.some((x) => x.test(r.url()))) errors.push(`HTTP ${r.status()} ${r.url()}`); });
-    page.on('pageerror', (e) => errors.push(e.message));
+    page.on('pageerror', (e) => { if (!IGNORED_CONSOLE.some((r) => r.test(e.message))) errors.push(e.message); });
     await use(errors);
     expect(errors, 'browser console errors').toEqual([]);
   }, { auto: true }],
@@ -46,6 +50,8 @@ export async function signIn(page: Page, email: string, audience: 'staff' | 'cus
 
 /** Sign out through the real button when it's on screen (revokes the server session); otherwise drop the stored session. */
 export async function signOut(page: Page) {
+  // A modal (sheet, dialog) hides the rest of the page from the accessibility tree: close it first.
+  for (let i = 0; i < 3 && (await page.getByRole('dialog').count()) > 0; i++) await page.keyboard.press('Escape');
   const button = page.getByRole('button', { name: 'Sign out' }).first();
   const profile = page.getByTestId('profile-menu-trigger');
   if (await button.isVisible().catch(() => false)) {
@@ -65,6 +71,18 @@ export async function signOut(page: Page) {
     } else await page.keyboard.press('Escape');
   }
   await page.evaluate(() => { try { localStorage.removeItem('travelta:session'); } catch { /* storage blocked */ } });
+}
+
+/**
+ * The in-browser demo backend stores a full snapshot just after each write, then announces it to other tabs on the
+ * `travelta-db` BroadcastChannel. Start this BEFORE the action and await it before a reload that must read the write
+ * back (a reload during the store would lose it — a demo-backend limitation, see docs/QA/KNOWN_ISSUES.md).
+ */
+export function nextPersist(page: Page): Promise<void> {
+  return page.evaluate(() => new Promise<void>((resolve) => {
+    const channel = new BroadcastChannel('travelta-db');
+    channel.onmessage = () => { channel.close(); resolve(); };
+  }));
 }
 
 /** Wait until the page shows real content: no loading skeletons left (the mock API runs in the browser, so networkidle is not enough). */

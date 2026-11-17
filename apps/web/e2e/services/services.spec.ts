@@ -1,4 +1,4 @@
-import { expect, searchUrl, signIn, test, ACCOUNTS } from './fixtures';
+import { expect, searchUrl, signIn, test, ACCOUNTS } from '../fixtures';
 
 /** Every service: public search → results with photos → product details with options, policy and price breakdown. */
 const SERVICES: [string, string][] = [['hotel', 'LXR'], ['flight', 'DXB'], ['tour', 'LXR'], ['visa', 'DXB'], ['umrah', 'MKX'], ['activity', 'HRG'], ['transfer', 'HRG']];

@@ -25,6 +25,7 @@ import { Link, useRouter } from '@/i18n/navigation';
 import { useErrorMessage } from '@/lib/errors';
 import { cn } from '@/lib/cn';
 import { CustomerStep, type CustomerChoice } from './customer-step';
+import { useSession } from '@/lib/session';
 import { PaymentPlanEditor, planInstallments, type PlanDraft } from './payment-step';
 import { blankTravellers, TravellerFields } from './traveller-fields';
 
@@ -41,7 +42,10 @@ export function CheckoutPage({ portalRoot = '/agency', storefront }: { portalRoo
   const router = useRouter();
   const errorMessage = useErrorMessage();
   const cart = useCart(storefront);
-  const staff = cart.data ? cart.data.audience !== 'customer' : true;
+  // Who is buying is known from the session at once. Deriving it from the cart (unknown while it loads) let a quick
+  // "Continue" send a customer into the staff-only customer step, where they were stuck.
+  const userType = useSession((x) => x.session?.user.userType);
+  const staff = userType ? userType !== 'customer' : cart.data ? cart.data.audience !== 'customer' : true;
   const steps: Step[] = staff ? ['review', 'customer', 'travellers', 'payment'] : ['review', 'travellers', 'payment'];
   const [step, setStep] = useState<Step>('review');
   const [recheck, setRecheck] = useState<RecheckOutput | null>(null);

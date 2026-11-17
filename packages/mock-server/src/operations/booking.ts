@@ -12,7 +12,15 @@ import { invalid } from '../errors';
 import { projectBreakdown } from '../services/pricing';
 import { linkRequestBooking } from '../services/crm';
 import { bookingSubmitted } from '../services/notifications/events';
+import { assertOrgEligible } from '../services/kyc';
+import type { RequestContext } from '../context';
 import type { HandlerMap } from './types';
+
+/**
+ * KYC-4/5, TENANCY §74: a business that isn't active (pending KYC, suspended, expired documents) can't book.
+ * Customers buy from a storefront, whose seller is checked by the storefront itself.
+ */
+const assertStaffCanBook = (ctx: RequestContext) => { if (ctx.principal?.user.userType === 'staff') assertOrgEligible(ctx); };
 
 type Ops =
   | 'bookings.board' | 'bookings.confirmItem' | 'bookings.rejectItem' | 'bookings.voucherItem' | 'bookings.markNoShow' | 'bookings.retrySupplier'
@@ -45,6 +53,7 @@ export const bookingHandlers: HandlerMap<Ops> = {
     return cartDto(ctx, loadCart(ctx, viewer, storefront), viewer);
   },
   'cart.addOffer': (ctx, input) => {
+    assertStaffCanBook(ctx);
     const viewer = cartViewer(ctx, input.storefront);
     return cartDto(ctx, addOfferItem(ctx, loadCart(ctx, viewer, input.storefront), input), viewer);
   },
@@ -54,6 +63,7 @@ export const bookingHandlers: HandlerMap<Ops> = {
     return { breakdown: projectBreakdown(priceManual(ctx, viewer, input).breakdown, viewer.audience) };
   },
   'cart.addManual': (ctx, input) => {
+    assertStaffCanBook(ctx);
     const viewer = cartViewer(ctx);
     return cartDto(ctx, addManualItem(ctx, loadCart(ctx, viewer), viewer, input), viewer);
   },
@@ -77,6 +87,7 @@ export const bookingHandlers: HandlerMap<Ops> = {
     const p = requirePrincipal(ctx);
     // A replayed idempotency key returns the original booking even though the cart is already checked out.
     const replay = ctx.db.find('bookings', (b) => b.idempotencyKey === input.idempotencyKey && b.createdByUserId === p.user.id);
+    if (!replay) assertStaffCanBook(ctx);
     const booking: BookingEntity = replay ?? submitCheckout(ctx, loadCart(ctx, viewer, input.storefront), viewer, input, submitHooks);
     if (!replay && input.requestId) linkRequestBooking(ctx, input.requestId, booking);
     if (!replay) bookingSubmitted(ctx, ctx.db.get('bookings', booking.id)!);

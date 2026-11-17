@@ -1,4 +1,4 @@
-import { expect, searchUrl, signIn, test, ACCOUNTS } from './fixtures';
+import { expect, searchUrl, signIn, test, ACCOUNTS } from '../fixtures';
 
 test('customer saves a hotel to favorites from search and finds it in the account', async ({ page }) => {
   await signIn(page, ACCOUNTS.customer, 'customer');

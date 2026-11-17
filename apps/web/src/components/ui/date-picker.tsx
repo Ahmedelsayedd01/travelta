@@ -126,7 +126,7 @@ export const DateInput = forwardRef<HTMLInputElement, DateInputProps>(function D
     <>
       <input ref={setRef} type="hidden" name={name} {...(controlled ? { value } : { defaultValue })} />
       <DatePicker id={triggerId} value={controlled ? value : shown} onChange={emit} min={min ? String(min) : undefined} max={max ? String(max) : undefined} disabled={disabled}
-        label={ariaLabel} className={cn('min-w-44', className)} testId={testId ?? (name ? `date-${name}` : undefined)} placeholder={placeholder}
+        label={ariaLabel} className={className} testId={testId ?? (name ? `date-${name}` : undefined)} placeholder={placeholder}
         clearable={clearable ?? !required_} yearNav={yearNav} aria-invalid={invalid === true || invalid === 'true'} aria-describedby={describedBy} aria-required={required_}
         onBlur={() => onBlur?.({ target: native.current, currentTarget: native.current, type: 'blur' } as never)} />
     </>
